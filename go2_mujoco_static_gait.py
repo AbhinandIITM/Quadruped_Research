@@ -33,8 +33,8 @@ BODY_HEIGHT = 0.3
 STEP_HEIGHT = 0.1
 
 # --- static walk gait params ---
-GAIT_PERIOD =  1.0   # T
-STANCE_RATIO = 0.80     # d (duty factor)
+GAIT_PERIOD =  0.35  # T
+STANCE_RATIO = 0.60     # d (duty factor)
 T_STANCE = GAIT_PERIOD * STANCE_RATIO
 
 BODY_L = 0.3762
@@ -44,7 +44,7 @@ BODY_W = 0.0935
 # 3. DESIRED BODY COMMAND
 # ============================================================
 
-vx = 0.06
+vx = 0.2
 vy = 0.00
 omega = 0.00
 NOMINAL_FEET = {

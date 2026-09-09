@@ -1,0 +1,24 @@
+{
+  "samples": 10240,
+  "duration_sec": 43.14401984214783,
+  "velocity_rmse": {
+    "vx": 0.021860148935210346,
+    "vy": 0.07385641931203549,
+    "wz": 0.1700968491266994
+  },
+  "body_attitude_rms": {
+    "roll": null,
+    "pitch": null
+  },
+  "peak_attitude_excursion": {
+    "max_abs_roll": null,
+    "max_abs_pitch": null
+  },
+  "settling_time_after_start_sec": null,
+  "slip_heading_drift_proxy": {
+    "sideways_velocity_bias_mps": -0.0010573765668473061,
+    "integrated_abs_vy_m": 2.735264639474776,
+    "integrated_abs_yaw_rate_rad": 6.537853158688877,
+    "integrated_abs_yaw_error_rad_s": 4.613733218524694
+  }
+}
