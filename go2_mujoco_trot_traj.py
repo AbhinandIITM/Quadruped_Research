@@ -3,53 +3,27 @@ import os
 import time
 import json
 import threading
+import warnings
 from collections import deque
 
 import numpy as np
 import matplotlib.pyplot as plt
+import mujoco
+import mujoco.viewer
 
-try:
-    import mujoco
-    import mujoco.viewer
-except ImportError as e:
-    raise ImportError(
-        "This script requires the official mujoco Python package. Install with: pip install mujoco"
-    ) from e
+# Suppress Matplotlib GUI warning for daemon thread debugging
+warnings.filterwarnings("ignore", message="Starting a Matplotlib GUI outside of the main thread will likely fail")
 
 # ============================================================
 # 1. MUJOCO INITIALIZATION + GO2 MODEL PREP
 # ============================================================
 
-here = os.path.dirname(os.path.abspath(__file__))
-MODEL_CANDIDATES = [
-    os.path.join(here, "unitree_go2", "mjcf", "scene.xml"),
-    os.path.join(here, "unitree_go2", "mjcf", "go2.xml"),
-    os.path.join(here, "unitree_go2", "xml", "scene.xml"),
-    os.path.join(here, "unitree_go2", "xml", "go2.xml"),
-    os.path.join(here, "go2.xml"),
-    os.path.join(here, "scene.xml"),
-]
-
-MODEL_PATH = None
-for cand in MODEL_CANDIDATES:
-    if os.path.exists(cand):
-        MODEL_PATH = cand
-        break
-if MODEL_PATH is None:
-    raise FileNotFoundError(
-        "Could not find a MuJoCo Go2 model. Put a MuJoCo XML/MJCF at one of: {}".format(MODEL_CANDIDATES)
-    )
+MODEL_PATH = r"unitree_go2\go2_description.xml"
 
 model = mujoco.MjModel.from_xml_path(MODEL_PATH)
 data = mujoco.MjData(model)
 model.opt.gravity[:] = np.array([0.0, 0.0, -9.81])
 SIM_DT = model.opt.timestep
-
-# Spawn pose, roughly matching the PyBullet script.
-if model.nq >= 7:
-    data.qpos[0:3] = np.array([0.0, 0.0, 0.45])
-    data.qpos[3:7] = np.array([1.0, 0.0, 0.0, 0.0])
-mujoco.mj_forward(model, data)
 
 # ============================================================
 # 2. ROBOT GEOMETRY
@@ -59,14 +33,31 @@ HIP_OFFSET = 0.0955
 THIGH = 0.213
 CALF = 0.213
 
-BODY_HEIGHT = 0.32
-STEP_HEIGHT = 0.05
-GAIT_PERIOD = 0.8
+BODY_HEIGHT = 0.3
+STEP_HEIGHT = 0.17
+GAIT_PERIOD = 0.3
 STANCE_RATIO = 0.5
 T_STANCE = GAIT_PERIOD * STANCE_RATIO
 
 BODY_L = 0.3762
 BODY_W = 0.0935
+
+# ============================================================
+# 3. DESIRED BODY COMMAND
+# ============================================================
+
+vx = 0.2
+vy = 0.00
+omega = 0.00
+
+# Tracking variables for distance comparison
+TARGET_DISTANCE = 2.0
+INITIAL_VX = vx
+START_THRESHOLD = 0.05  # Wait until robot moves 5cm before starting timer
+target_reached = False
+initial_stand_x = None
+start_x = None
+start_time = None
 
 NOMINAL_FEET = {
     "FR": np.array([ BODY_L/2, -(BODY_W/2 + HIP_OFFSET), -BODY_HEIGHT]),
@@ -85,6 +76,87 @@ HIP_BODY = {
 PHASE_OFFSET = {"FR": 0.0, "RL": 0.0, "FL": 0.5, "RR": 0.5}
 IS_LEFT = {"FR": False, "FL": True, "RR": False, "RL": True}
 LEGS = ["FR", "FL", "RR", "RL"]
+
+
+def nominal_foot_hip(leg):
+    return NOMINAL_FEET[leg] - np.array([HIP_BODY[leg][0], HIP_BODY[leg][1], 0.0])
+
+
+def leg_ik(x, y, z, is_left=False):
+    l1 = HIP_OFFSET if is_left else -HIP_OFFSET
+    yz = y * y + z * z
+    if yz <= HIP_OFFSET ** 2:
+        return 0.0, 0.0, 0.0
+
+    theta1 = math.atan2(y, -z) - math.atan2(l1, math.sqrt(yz - HIP_OFFSET ** 2))
+    d = x * x + yz - HIP_OFFSET ** 2
+    D = (d - THIGH ** 2 - CALF ** 2) / (2 * THIGH * CALF)
+    D = max(-1.0, min(1.0, D))
+    theta3 = -math.acos(D)
+
+    a = math.atan2(-x, math.sqrt(yz - HIP_OFFSET ** 2))
+    b = math.atan2(CALF * math.sin(abs(theta3)), THIGH + CALF * math.cos(theta3))
+    theta2 = -(a - b)
+    return theta1, theta2, theta3
+
+
+joint_order = [
+    "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
+    "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
+    "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",
+    "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
+]
+
+
+def _name_to_id(name, kind='joint'):
+    if kind == 'joint':
+        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
+    elif kind == 'actuator':
+        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
+    elif kind == 'body':
+        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
+    else:
+        raise ValueError(kind)
+    return idx if idx != -1 else None
+
+
+qpos_adr = []
+actuator_ids = []
+for jn in joint_order:
+    jid = _name_to_id(jn, 'joint')
+    if jid is None:
+        raise KeyError(f"Joint not found in MuJoCo model: {jn}")
+    qpos_adr.append(model.jnt_qposadr[jid])
+
+    aid = _name_to_id(jn, 'actuator')
+    if aid is None:
+        cand = _name_to_id(jn.replace('_joint', ''), 'actuator')
+        if cand is not None:
+            aid = cand
+    actuator_ids.append(aid)
+
+if any(a is None for a in actuator_ids):
+    missing = [joint_order[i] for i, a in enumerate(actuator_ids) if a is None]
+    raise KeyError(
+        "Missing MuJoCo position actuators for joints: {}. "
+        "Add actuators named like the joint or joint name without '_joint'.".format(missing)
+    )
+
+# Standing joint targets
+standing_q = []
+for leg in LEGS:
+    x, y, z = nominal_foot_hip(leg)
+    standing_q += list(leg_ik(x, y, z, IS_LEFT[leg]))
+
+# Spawn pose
+if model.nq >= 7:
+    data.qpos[0:3] = np.array([0.0, 0.0, BODY_HEIGHT + 0.01])
+    data.qpos[3:7] = np.array([1.0, 0.0, 0.0, 0.0])
+for adr, val in zip(qpos_adr, standing_q):
+    data.qpos[adr] = val
+for aid, val in zip(actuator_ids, standing_q):
+    data.ctrl[aid] = val
+mujoco.mj_forward(model, data)
 
 # ============================================================
 # 3A. DEBUG THREAD CONFIG + METRICS
@@ -109,51 +181,8 @@ SETTLING_BAND_WZ = 0.10
 SETTLING_HOLD_SEC = 0.50
 
 # ============================================================
-# 4. JOINT / ACTUATOR MAP
+# 4. BASE BODY ID
 # ============================================================
-
-joint_order = [
-    "FR_hip_joint", "FR_thigh_joint", "FR_calf_joint",
-    "FL_hip_joint", "FL_thigh_joint", "FL_calf_joint",
-    "RR_hip_joint", "RR_thigh_joint", "RR_calf_joint",
-    "RL_hip_joint", "RL_thigh_joint", "RL_calf_joint",
-]
-
-
-def _name_to_id(name, kind='joint'):
-    if kind == 'joint':
-        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, name)
-    elif kind == 'actuator':
-        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_ACTUATOR, name)
-    elif kind == 'body':
-        idx = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, name)
-    else:
-        raise ValueError(kind)
-    return idx if idx != -1 else None
-
-joint_ids = []
-actuator_ids = []
-qpos_adr = []
-for jn in joint_order:
-    jid = _name_to_id(jn, 'joint')
-    if jid is None:
-        raise KeyError(f"Joint not found in MuJoCo model: {jn}")
-    joint_ids.append(jid)
-    qpos_adr.append(model.jnt_qposadr[jid])
-
-    aid = _name_to_id(jn, 'actuator')
-    if aid is None:
-        cand = _name_to_id(jn.replace('_joint', ''), 'actuator')
-        if cand is not None:
-            aid = cand
-    actuator_ids.append(aid)
-
-if any(a is None for a in actuator_ids):
-    missing = [joint_order[i] for i, a in enumerate(actuator_ids) if a is None]
-    raise KeyError(
-        "Missing MuJoCo position actuators for joints: {}. "
-        "Add actuators named like the joint or joint name without '_joint'.".format(missing)
-    )
 
 base_body_id = _name_to_id('base', 'body')
 if base_body_id is None:
@@ -163,10 +192,6 @@ if base_body_id is None:
             break
 if base_body_id is None:
     base_body_id = 1 if model.nbody > 1 else 0
-
-# ============================================================
-# 5. HELPERS
-# ============================================================
 
 def Rz(theta):
     c, s = math.cos(theta), math.sin(theta)
@@ -189,9 +214,6 @@ def body_to_world_xy(body_xy, body_pose):
 
 def world_to_body_xy(world_xy, body_pose):
     return Rz(-body_pose[2]) @ (world_xy - body_pose[:2])
-
-def nominal_foot_hip(leg):
-    return NOMINAL_FEET[leg] - np.array([HIP_BODY[leg][0], HIP_BODY[leg][1], 0.0])
 
 def clamp(x, lo, hi):
     return max(lo, min(hi, x))
@@ -467,25 +489,8 @@ def debug_plot_worker():
     plt.close(fig)
 
 # ============================================================
-# 6. IK : Hip to feet . Hip is fixed.
+# 6. IK-DEPENDENT HELPERS
 # ============================================================
-
-def leg_ik(x, y, z, is_left=False):
-    l1 = HIP_OFFSET if is_left else -HIP_OFFSET
-    yz = y * y + z * z
-    if yz <= HIP_OFFSET ** 2:
-        return 0.0, 0.0, 0.0
-
-    theta1 = math.atan2(y, -z) - math.atan2(l1, math.sqrt(yz - HIP_OFFSET ** 2))
-    d = x * x + yz - HIP_OFFSET ** 2
-    D = (d - THIGH ** 2 - CALF ** 2) / (2 * THIGH * CALF)
-    D = max(-1.0, min(1.0, D))
-    theta3 = -math.acos(D)
-
-    a = math.atan2(-x, math.sqrt(yz - HIP_OFFSET ** 2))
-    b = math.atan2(CALF * math.sin(abs(theta3)), THIGH + CALF * math.cos(theta3))
-    theta2 = -(a - b)
-    return theta1, theta2, theta3
 
 def stance_foot_in_hip_frame(leg, body_pose, stance_foot_world):
     foot_xy_body = world_to_body_xy(stance_foot_world[:2], body_pose)
@@ -505,35 +510,26 @@ def command_joint_positions(q):
     for aid, angle in zip(actuator_ids, q):
         data.ctrl[aid] = angle
 
-def step_with_viewer(viewer=None):
+# Decoupled Render Settings
+last_render_time = time.time()
+RENDER_FPS = 30
+RENDER_DT = 1.0 / RENDER_FPS
+
+def step_sim(viewer=None):
+    global last_render_time
     mujoco.mj_step(model, data)
     if viewer is not None and viewer.is_running():
-        viewer.sync()
+        t_now = time.time()
+        if t_now - last_render_time >= RENDER_DT:
+            viewer.sync()
+            last_render_time = t_now
 
-# ============================================================
-# 3. DESIRED BODY COMMAND
-# ============================================================
-
-vx_cmd = 0.15
-vy_cmd = 0.00
-omega_cmd = 0.00
-
-ENABLE_IMU_VX_FEEDBACK_ONLY = False
-ENABLE_IMU_PLANAR_FEEDBACK = False
-
-KVX = 0.0
-KVY = 0.15
-KW = 0.08
-
-VX_LIM = 0.50
-VY_LIM = 0.30
-W_LIM = 1.50
-
-def compute_touchdown_body(leg, vx_use, vy_use, omega_use):
-    alpha = 0.5
-    dx = vx_use * (alpha * T_STANCE)
-    dy = vy_use * (alpha * T_STANCE)
-    dtheta = omega_use * (alpha * T_STANCE)
+def compute_touchdown_body(leg):
+    T_swing = GAIT_PERIOD * (1.0 - STANCE_RATIO)
+    T_horizon = T_STANCE / 1.0 + T_swing
+    dx = vx * T_horizon
+    dy = vy * T_horizon
+    dtheta = omega * T_horizon
     p_nom = NOMINAL_FEET[leg]
     td_xy = Rz(dtheta) @ p_nom[:2] + np.array([dx, dy])
     return np.array([td_xy[0], td_xy[1], p_nom[2]])
@@ -552,60 +548,79 @@ initial_global_phase = 0.0
 for leg in LEGS:
     prev_stance[leg] = in_stance(leg_phase(initial_global_phase, PHASE_OFFSET[leg]))
 
-STAND_DUR = 3.0
+STAND_DUR = 3
 debug_thread = None
 if ENABLE_DEBUG_PLOT:
     debug_thread = threading.Thread(target=debug_plot_worker, daemon=True)
     debug_thread.start()
 
-wall_start = time.time()
+sim_start = data.time
+
 try:
     with mujoco.viewer.launch_passive(model, data) as viewer:
         while viewer.is_running():
-            elapsed = time.time() - wall_start
+            step_start_wall = time.time()
+            
+            # USE INTERNAL SIMULATION TIME INSTEAD OF WALL CLOCK
+            elapsed = data.time - sim_start
 
             if elapsed < STAND_DUR:
-                progress = (1 - math.cos(math.pi * elapsed / STAND_DUR)) / 2
-                q = []
-                for leg in LEGS:
-                    x, y, z = nominal_foot_hip(leg)
-                    angles = leg_ik(x, y, z, IS_LEFT[leg])
-                    q += [progress * a for a in angles]
-
-                command_joint_positions(q)
-                step_with_viewer(viewer)
+                command_joint_positions(standing_q)
+                step_sim(viewer)
 
                 if ENABLE_DEBUG_PLOT:
-                    imu = get_imu_state()
-                    publish_debug_sample(0.0, vx_cmd, vy_cmd, omega_cmd, imu["vx"], imu["vy"], imu["wz"], imu)
-                time.sleep(SIM_DT)
+                    vx_est, vy_est, w_est, _ = get_estimated_body_velocities()
+                    publish_debug_sample(0.0, vx, vy, omega, vx_est, vy_est, w_est)
+
+                # Real-time governor
+                time_to_wait = SIM_DT - (time.time() - step_start_wall)
+                if time_to_wait > 0:
+                    time.sleep(time_to_wait)
                 continue
 
-            imu = get_imu_state()
-            vx_est = imu["vx"]
-            vy_est = imu["vy"]
-            w_est = imu["wz"]
+            # DISTANCE TRACKING AND TIME COMPARISON LOGIC
+            if initial_stand_x is None:
+                initial_stand_x = data.qpos[0]  
 
-            if ENABLE_IMU_VX_FEEDBACK_ONLY:
-                vx_use = vx_cmd + KVX * (vx_cmd - vx_est)
-                vy_use = vy_cmd
-                omega_use = omega_cmd
-            elif ENABLE_IMU_PLANAR_FEEDBACK:
-                vx_use = vx_cmd + KVX * (vx_cmd - vx_est)
-                vy_use = vy_cmd + KVY * (vy_cmd - vy_est)
-                omega_use = omega_cmd + KW * (omega_cmd - w_est)
+            if start_time is None:
+                # Wait until the robot actually translates 5cm forward before clocking
+                if abs(data.qpos[0] - initial_stand_x) >= START_THRESHOLD:
+                    start_x = data.qpos[0]
+                    start_time = data.time
+                    print(f"Motion detected (crossed {START_THRESHOLD}m threshold). Starting timer for {TARGET_DISTANCE}m...")
             else:
-                vx_use = vx_cmd
-                vy_use = vy_cmd
-                omega_use = omega_cmd
+                current_dist = abs(data.qpos[0] - start_x)
 
-            vx_use = clamp(vx_use, -VX_LIM, VX_LIM)
-            vy_use = clamp(vy_use, -VY_LIM, VY_LIM)
-            omega_use = clamp(omega_use, -W_LIM, W_LIM)
+                if current_dist >= TARGET_DISTANCE and not target_reached:
+                    actual_time = data.time - start_time
+                    expected_time = TARGET_DISTANCE / INITIAL_VX if INITIAL_VX > 0 else float('inf')
+                    print(f"\n--- TARGET DISTANCE REACHED ---")
+                    print(f"Target Distance: {TARGET_DISTANCE} m")
+                    print(f"Input Velocity (vx): {INITIAL_VX} m/s")
+                    print(f"Expected Time: {expected_time:.2f} s")
+                    print(f"Actual Sim Time Taken: {actual_time:.2f} s")
+                    print(f"Actual vel : {(TARGET_DISTANCE/actual_time):.2f} m/s")
+                    print(f"Stopping translational movement and commanding stand...\n")
+                    target_reached = True
 
+            # If the target is reached, bypass the walking algorithm entirely
+            if target_reached:
+                command_joint_positions(standing_q)
+                step_sim(viewer)
+                
+                t_loco = elapsed - STAND_DUR
+                vx_est, vy_est, w_est, yaw_est = get_estimated_body_velocities()
+                append_metrics_sample(t_loco, 0.0, 0.0, 0.0, vx_est, vy_est, w_est, yaw=yaw_est)
+                if ENABLE_DEBUG_PLOT:
+                    publish_debug_sample(t_loco, 0.0, 0.0, 0.0, vx_est, vy_est, w_est)
+                
+                time_to_wait = SIM_DT - (time.time() - step_start_wall)
+                if time_to_wait > 0:
+                    time.sleep(time_to_wait)
+                continue
+
+            # === REMAINDER ONLY RUNS IF WE ARE STILL WALKING ===
             body_pose_k = body_pose.copy()
-            body_pose_k[2] = imu["yaw"]
-
             t_loco = elapsed - STAND_DUR
             g_phase = gait_phase(t_loco)
             q = []
@@ -622,7 +637,7 @@ try:
 
                 if (not is_st) and prev_stance[leg]:
                     swing_start_hip[leg] = stance_foot_in_hip_frame(leg, body_pose_k, stance_feet[leg])
-                    td_body = compute_touchdown_body(leg, vx_use, vy_use, omega_use)
+                    td_body = compute_touchdown_body(leg)
                     touchdown_tgts_hip[leg] = td_body - np.array([HIP_BODY[leg][0], HIP_BODY[leg][1], 0.0])
 
                 if is_st:
@@ -636,26 +651,27 @@ try:
                 prev_stance[leg] = is_st
 
             command_joint_positions(q)
-            step_with_viewer(viewer)
+            step_sim(viewer)
 
-            append_metrics_sample(
-                t_loco,
-                vx_cmd, vy_cmd, omega_cmd,
-                vx_est, vy_est, w_est,
-                yaw=imu["yaw"], roll=imu["roll"], pitch=imu["pitch"],
-            )
+            vx_est, vy_est, w_est, yaw_est = get_estimated_body_velocities()
+            append_metrics_sample(t_loco, vx, vy, omega, vx_est, vy_est, w_est, yaw=yaw_est)
             if ENABLE_DEBUG_PLOT:
-                publish_debug_sample(t_loco, vx_cmd, vy_cmd, omega_cmd, vx_est, vy_est, w_est, imu)
+                publish_debug_sample(t_loco, vx, vy, omega, vx_est, vy_est, w_est)
 
-            body_pose[0] -= vx_use * SIM_DT
-            body_pose[1] += vy_use * SIM_DT
-            body_pose[2] = imu["yaw"]
-            time.sleep(SIM_DT)
+            body_pose[0] -= vx * SIM_DT
+            body_pose[1] += vy * SIM_DT
+            body_pose[2] = wrap_to_pi(body_pose[2] + omega * SIM_DT)
+            
+            # Real-time governor
+            time_to_wait = SIM_DT - (time.time() - step_start_wall)
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
+
 except KeyboardInterrupt:
     pass
 finally:
-    summary = build_metrics_summary(include_attitude=True)
-    save_and_print_metrics(summary, "go2_imu_mujoco")
+    summary = build_metrics_summary(include_attitude=False)
+    save_and_print_metrics(summary, "go2_nonimu_mujoco")
     if ENABLE_DEBUG_PLOT:
         debug_stop_event.set()
         if debug_thread is not None:
