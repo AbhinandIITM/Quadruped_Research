@@ -1,0 +1,37 @@
+{
+  "name": "obstacle_avoidance",
+  "description": "Forward locomotion in the presence of frontal obstacles, validating reactive vision perception, deceleration, and steering bypass.",
+  "duration_s": 7.0,
+  "commands": [
+    {
+      "start_time_s": 0.0,
+      "duration_s": 1.0,
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "start_time_s": 1.0,
+      "duration_s": 5.0,
+      "mode": "trot",
+      "vx": 0.35,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "start_time_s": 6.0,
+      "duration_s": 1.0,
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.18,
+    "max_pitch_rad": 0.18,
+    "min_forward_displacement_m": 0.5
+  }
+}

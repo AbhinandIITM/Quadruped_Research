@@ -1,0 +1,16 @@
+{
+  "explanation": "Navigating to waypoint (1.5, 0.8) at speed 0.35 m/s.",
+  "commands": [
+    {
+      "mode": "waypoint",
+      "vx": 0.35,
+      "vy": 0.0,
+      "yaw_rate": 0.0,
+      "duration": 8.0,
+      "waypoint_x": 1.5,
+      "waypoint_y": 0.8,
+      "waypoint_speed": 0.35,
+      "waypoint_tolerance": 0.15
+    }
+  ]
+}

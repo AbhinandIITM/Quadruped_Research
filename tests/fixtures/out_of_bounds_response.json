@@ -1,0 +1,12 @@
+{
+  "explanation": "Attempting dangerously high velocity and yaw rates.",
+  "commands": [
+    {
+      "mode": "velocity",
+      "vx": 120.0,
+      "vy": -50.0,
+      "yaw_rate": 45.0,
+      "duration": 500.0
+    }
+  ]
+}

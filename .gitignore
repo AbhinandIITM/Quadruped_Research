@@ -4,3 +4,10 @@
 /.vscode
 /.tmp.driveupload
 /.tmp.drivedownload
+/logs
+champ/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example

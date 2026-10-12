@@ -1,0 +1,28 @@
+{
+  "name": "stop_and_hold",
+  "description": "Forward locomotion at 0.35 m/s followed by sudden stop command to verify braking stability and transition to stand hold.",
+  "duration_s": 5.0,
+  "commands": [
+    {
+      "start_time_s": 0.0,
+      "duration_s": 2.5,
+      "mode": "trot",
+      "vx": 0.35,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "start_time_s": 2.5,
+      "duration_s": 2.5,
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.15,
+    "max_pitch_rad": 0.15
+  }
+}

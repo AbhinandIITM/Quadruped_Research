@@ -1,0 +1,19 @@
+{
+  "explanation": "Moving forward at 0.35 m/s for 2.5 seconds, then halting.",
+  "commands": [
+    {
+      "mode": "velocity",
+      "vx": 0.35,
+      "vy": 0.0,
+      "yaw_rate": 0.0,
+      "duration": 2.5
+    },
+    {
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0,
+      "duration": 1.0
+    }
+  ]
+}
