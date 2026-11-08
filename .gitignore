@@ -4,10 +4,57 @@
 /.vscode
 /.tmp.driveupload
 /.tmp.drivedownload
-/logs
+logs/
+results/
 champ/
+third_party/champ/
 __pycache__/
 *.pyc
 .env
 .env.*
 !.env.example
+.claude/
+.agents/
+
+# Orphaned duplicate of the src/ package (22 files, ~2,276 lines).
+# Imported by nothing, excluded from the wheel, 0% test coverage, and
+# already stale against src/ in at least 10 verified ways.  SAFE TO DELETE.
+# Ignored here so a stray `git add -A` cannot commit it.  See
+# REMAINING_CHANGES.md and report/notes/02_qp_gait_module.md.
+go2_champ/
+
+# Vendored upstream repositories (champ, unitree_guide, unitree_mujoco).
+# They are full git clones with their own histories and ~375 MB of assets;
+# they are references, not sources.  See third_party/README.md.
+third_party/
+
+# Python build / packaging artifacts -- regenerated, never hand-edited.
+# (PKG-INFO mirrors README.md, so it goes stale the moment the README does.)
+*.egg-info/
+*.egg
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.DS_Store
+Thumbs.db
+
+texput.log
+
+
+# Never commit plaintext credentials, even ones already in .env.
+*proxy_credentials*
+*credentials*.txt
+*.zip
+*.pt
+references/
+docs/
+tests/
+rl/results/
+rl/eval_results/
+rl/runs/
+tests/
+.tmp/

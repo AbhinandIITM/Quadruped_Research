@@ -1,0 +1,1916 @@
+[run_balance] stage=balance seed=0 steps=5000000 num_envs=4096 device=cuda
+[run_balance] Run dir: runs\balance\run_1793890643  Results: results\balance\run_1793890643
+[IsaacLabRunner] stage=balance seed=0 envs=4096 config=balance device=cuda
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 0
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.002
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation Last: 4.271613 s, Mean: 4.271613 s, Std: 0.000000 s, N: 1
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 4096
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+Finalize builder took: Last: 0.638744 s, Mean: 0.638744 s, Std: 0.000000 s, N: 1
+Contact sensor construction took: Last: 0.027375 s, Mean: 0.027375 s, Std: 0.000000 s, N: 1
+Initialize solver took: Last: 1.860441 s, Mean: 1.860441 s, Std: 0.000000 s, N: 1
+[INFO]: Time taken for simulation start Last: 3.132780 s, Mean: 3.132780 s, Std: 0.000000 s, N: 1
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++------------------------------------------------+
+|              Active Command Terms              |
++-------+---------------+------------------------+
+| Index | Name          |          Type          |
++-------+---------------+------------------------+
+|   0   | base_velocity | UniformVelocityCommand |
++-------+---------------+------------------------+
+
+[INFO] Event Manager:  <EventManager> contains 1 active terms.
++-------------------------------------+
+| Active Event Terms in Mode: 'reset' |
++-------+-----------------------------+
+| Index | Name                        |
++-------+-----------------------------+
+|   0   | randomize_mass              |
+|   1   | randomize_friction          |
+|   2   | randomize_joint_friction    |
+|   3   | randomize_motor_strength    |
+|   4   | push_robot                  |
+|   5   | reset_robot                 |
+|   6   | reset_joints                |
++-------+-----------------------------+
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++-----------------------+
+| Active Recorder Terms |
++------------+----------+
+|   Index    | Name     |
++------------+----------+
++------------+----------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++---------------------------------+
+| Active Action Terms (shape: 12) |
++-------+-----------+-------------+
+| Index | Name      |   Dimension |
++-------+-----------+-------------+
+|   0   | joint_pos |          12 |
++-------+-----------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 1 groups.
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (45,)) |
++-----------+----------------------------------+-------------+
+|   Index   | Name                             |    Shape    |
++-----------+----------------------------------+-------------+
+|     0     | base_ang_vel                     |     (3,)    |
+|     1     | projected_gravity                |     (3,)    |
+|     2     | velocity_commands                |     (3,)    |
+|     3     | joint_pos_rel                    |    (12,)    |
+|     4     | joint_vel_rel                    |    (12,)    |
+|     5     | prev_action                      |    (12,)    |
++-----------+----------------------------------+-------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 3 active terms.
++------------------------------------+
+|      Active Termination Terms      |
++-------+-----------------+----------+
+| Index | Name            | Time Out |
++-------+-----------------+----------+
+|   0   | time_out        |   True   |
+|   1   | base_height     |  False   |
+|   2   | bad_orientation |  False   |
++-------+-----------------+----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 10 active terms.
++-----------------------------------+
+|        Active Reward Terms        |
++-------+------------------+--------+
+| Index | Name             | Weight |
++-------+------------------+--------+
+|   0   | track_lin_vel_xy |    0.0 |
+|   1   | track_ang_vel_z  |    0.0 |
+|   2   | joint_deviation  |    2.0 |
+|   3   | flat_orientation |    2.0 |
+|   4   | joint_acc        |   0.02 |
+|   5   | action_rate      |   0.01 |
+|   6   | joint_torques    |    0.1 |
+|   7   | base_height      |    2.0 |
+|   8   | feet_air_time    |    0.0 |
+|   9   | forward_progress |    0.0 |
++-------+------------------+--------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++-------------------------+
+| Active Curriculum Terms |
++-------------+-----------+
+|    Index    | Name      |
++-------------+-----------+
++-------------+-----------+
+
+[INFO]: Completed setting up the environment...
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 actor :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor Model: MLPModel(
+  (obs_normalizer): Identity()
+  (distribution): GaussianDistribution()
+  (mlp): MLP(
+    (0): Linear(in_features=45, out_features=128, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=128, out_features=128, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=128, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=12, bias=True)
+  )
+)
+Critic Model: MLPModel(
+  (obs_normalizer): Identity()
+  (mlp): MLP(
+    (0): Linear(in_features=45, out_features=128, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=128, out_features=128, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=128, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=1, bias=True)
+  )
+)
+[IsaacLabRunner] stage=balance seed=0 envs=4096 iterations=50 steps_per_iter=98304
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+CUDA graph took: Last: 0.513151 s, Mean: 0.513151 s, Std: 0.000000 s, N: 1
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 98304 
+                       Steps per second: 19698 
+                        Collection time: 4.767s 
+                          Learning time: 0.223s 
+                        Mean value loss: 110039.2645
+                    Mean surrogate loss: -0.0044
+                      Mean entropy loss: 17.0852
+                            Mean reward: 569.85
+                    Mean episode length: 13.00
+                        Mean action std: 1.01
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.0463
+        Episode_Reward/flat_orientation: 0.0003
+               Episode_Reward/joint_acc: 26.6420
+             Episode_Reward/action_rate: 0.0029
+           Episode_Reward/joint_torques: 0.6466
+             Episode_Reward/base_height: 0.0002
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0833
+     Metrics/base_velocity/error_vel_xy: 0.5904
+    Metrics/base_velocity/error_vel_yaw: 0.6694
+           Episode_Termination/time_out: 0.0106
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.0000
+--------------------------------------------------------------------------------
+                         Iteration time: 4.99s
+                           Time elapsed: 0:00:04
+                                    ETA: 0:00:00
+
+  iter    0 | step    98304 | rew 969.203 | len  24.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev -0.0001 | 0 steps/s
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 196608 
+                       Steps per second: 53418 
+                        Collection time: 1.700s 
+                          Learning time: 0.141s 
+                        Mean value loss: 89500.1203
+                    Mean surrogate loss: -0.0087
+                      Mean entropy loss: 17.2503
+                            Mean reward: 1718.83
+                    Mean episode length: 47.85
+                        Mean action std: 1.03
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.1760
+        Episode_Reward/flat_orientation: 0.0128
+               Episode_Reward/joint_acc: 64.1616
+             Episode_Reward/action_rate: 0.0088
+           Episode_Reward/joint_torques: 2.0305
+             Episode_Reward/base_height: 0.0003
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0287
+     Metrics/base_velocity/error_vel_xy: 0.7370
+    Metrics/base_velocity/error_vel_yaw: 0.8034
+           Episode_Termination/time_out: 0.0315
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.1374
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:06
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 294912 
+                       Steps per second: 54276 
+                        Collection time: 1.678s 
+                          Learning time: 0.133s 
+                        Mean value loss: 110990.8543
+                    Mean surrogate loss: -0.0082
+                      Mean entropy loss: 17.4630
+                            Mean reward: 2260.12
+                    Mean episode length: 61.56
+                        Mean action std: 1.05
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2986
+        Episode_Reward/flat_orientation: 0.0285
+               Episode_Reward/joint_acc: 99.8373
+             Episode_Reward/action_rate: 0.0143
+           Episode_Reward/joint_torques: 3.2825
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0134
+     Metrics/base_velocity/error_vel_xy: 0.6939
+    Metrics/base_velocity/error_vel_yaw: 0.7566
+           Episode_Termination/time_out: 0.0418
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.6609
+--------------------------------------------------------------------------------
+                         Iteration time: 1.81s
+                           Time elapsed: 0:00:08
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 393216 
+                       Steps per second: 53251 
+                        Collection time: 1.710s 
+                          Learning time: 0.136s 
+                        Mean value loss: 143793.9109
+                    Mean surrogate loss: -0.0088
+                      Mean entropy loss: 17.6926
+                            Mean reward: 2172.63
+                    Mean episode length: 52.34
+                        Mean action std: 1.07
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2725
+        Episode_Reward/flat_orientation: 0.0244
+               Episode_Reward/joint_acc: 100.1088
+             Episode_Reward/action_rate: 0.0137
+           Episode_Reward/joint_torques: 3.1112
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0147
+     Metrics/base_velocity/error_vel_xy: 0.7090
+    Metrics/base_velocity/error_vel_yaw: 0.7834
+           Episode_Termination/time_out: 0.0408
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9084
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:10
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 491520 
+                       Steps per second: 53293 
+                        Collection time: 1.707s 
+                          Learning time: 0.138s 
+                        Mean value loss: 177108.4406
+                    Mean surrogate loss: -0.0093
+                      Mean entropy loss: 17.9012
+                            Mean reward: 2592.22
+                    Mean episode length: 54.54
+                        Mean action std: 1.09
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2751
+        Episode_Reward/flat_orientation: 0.0250
+               Episode_Reward/joint_acc: 114.6587
+             Episode_Reward/action_rate: 0.0146
+           Episode_Reward/joint_torques: 3.1986
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0106
+     Metrics/base_velocity/error_vel_xy: 0.7042
+    Metrics/base_velocity/error_vel_yaw: 0.7710
+           Episode_Termination/time_out: 0.0408
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9529
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:12
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 589824 
+                       Steps per second: 53520 
+                        Collection time: 1.696s 
+                          Learning time: 0.140s 
+                        Mean value loss: 240164.3422
+                    Mean surrogate loss: -0.0108
+                      Mean entropy loss: 18.1095
+                            Mean reward: 2736.59
+                    Mean episode length: 51.24
+                        Mean action std: 1.11
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2734
+        Episode_Reward/flat_orientation: 0.0245
+               Episode_Reward/joint_acc: 127.1880
+             Episode_Reward/action_rate: 0.0152
+           Episode_Reward/joint_torques: 3.2891
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0077
+     Metrics/base_velocity/error_vel_xy: 0.7029
+    Metrics/base_velocity/error_vel_yaw: 0.7710
+           Episode_Termination/time_out: 0.0414
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9584
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:14
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 688128 
+                       Steps per second: 52959 
+                        Collection time: 1.720s 
+                          Learning time: 0.136s 
+                        Mean value loss: 313445.5281
+                    Mean surrogate loss: -0.0106
+                      Mean entropy loss: 18.3013
+                            Mean reward: 3185.25
+                    Mean episode length: 54.13
+                        Mean action std: 1.13
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2733
+        Episode_Reward/flat_orientation: 0.0244
+               Episode_Reward/joint_acc: 146.4099
+             Episode_Reward/action_rate: 0.0163
+           Episode_Reward/joint_torques: 3.3852
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0077
+     Metrics/base_velocity/error_vel_xy: 0.7086
+    Metrics/base_velocity/error_vel_yaw: 0.8002
+           Episode_Termination/time_out: 0.0413
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9596
+--------------------------------------------------------------------------------
+                         Iteration time: 1.86s
+                           Time elapsed: 0:00:16
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 786432 
+                       Steps per second: 53690 
+                        Collection time: 1.696s 
+                          Learning time: 0.135s 
+                        Mean value loss: 400233.9656
+                    Mean surrogate loss: -0.0112
+                      Mean entropy loss: 18.4602
+                            Mean reward: 3489.81
+                    Mean episode length: 52.91
+                        Mean action std: 1.14
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2706
+        Episode_Reward/flat_orientation: 0.0242
+               Episode_Reward/joint_acc: 164.0848
+             Episode_Reward/action_rate: 0.0172
+           Episode_Reward/joint_torques: 3.4559
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0108
+     Metrics/base_velocity/error_vel_xy: 0.7041
+    Metrics/base_velocity/error_vel_yaw: 0.8143
+           Episode_Termination/time_out: 0.0446
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9563
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:00:17
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 884736 
+                       Steps per second: 53141 
+                        Collection time: 1.715s 
+                          Learning time: 0.135s 
+                        Mean value loss: 516515.0234
+                    Mean surrogate loss: -0.0113
+                      Mean entropy loss: 18.5945
+                            Mean reward: 3878.84
+                    Mean episode length: 50.94
+                        Mean action std: 1.16
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2695
+        Episode_Reward/flat_orientation: 0.0239
+               Episode_Reward/joint_acc: 184.9817
+             Episode_Reward/action_rate: 0.0183
+           Episode_Reward/joint_torques: 3.5947
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0054
+     Metrics/base_velocity/error_vel_xy: 0.7032
+    Metrics/base_velocity/error_vel_yaw: 0.8235
+           Episode_Termination/time_out: 0.0410
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9597
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:19
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 983040 
+                       Steps per second: 53898 
+                        Collection time: 1.687s 
+                          Learning time: 0.137s 
+                        Mean value loss: 618296.0687
+                    Mean surrogate loss: -0.0110
+                      Mean entropy loss: 18.6925
+                            Mean reward: 4323.48
+                    Mean episode length: 51.85
+                        Mean action std: 1.16
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2691
+        Episode_Reward/flat_orientation: 0.0240
+               Episode_Reward/joint_acc: 206.7334
+             Episode_Reward/action_rate: 0.0194
+           Episode_Reward/joint_torques: 3.6836
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0050
+     Metrics/base_velocity/error_vel_xy: 0.7115
+    Metrics/base_velocity/error_vel_yaw: 0.8332
+           Episode_Termination/time_out: 0.0406
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9598
+--------------------------------------------------------------------------------
+                         Iteration time: 1.82s
+                           Time elapsed: 0:00:21
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1081344 
+                       Steps per second: 53628 
+                        Collection time: 1.698s 
+                          Learning time: 0.135s 
+                        Mean value loss: 759849.4250
+                    Mean surrogate loss: -0.0109
+                      Mean entropy loss: 18.7696
+                            Mean reward: 4791.43
+                    Mean episode length: 51.46
+                        Mean action std: 1.17
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2668
+        Episode_Reward/flat_orientation: 0.0234
+               Episode_Reward/joint_acc: 228.3607
+             Episode_Reward/action_rate: 0.0203
+           Episode_Reward/joint_torques: 3.7926
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0066
+     Metrics/base_velocity/error_vel_xy: 0.7218
+    Metrics/base_velocity/error_vel_yaw: 0.8158
+           Episode_Termination/time_out: 0.0410
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9597
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:00:23
+                                    ETA: 0:00:00
+
+  iter   10 | step  1081344 | rew 4732.755 | len  46.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev 0.0025 | 41364 steps/s
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1179648 
+                       Steps per second: 54265 
+                        Collection time: 1.674s 
+                          Learning time: 0.138s 
+                        Mean value loss: 902743.5844
+                    Mean surrogate loss: -0.0104
+                      Mean entropy loss: 18.8319
+                            Mean reward: 5142.01
+                    Mean episode length: 51.31
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2702
+        Episode_Reward/flat_orientation: 0.0239
+               Episode_Reward/joint_acc: 252.8656
+             Episode_Reward/action_rate: 0.0217
+           Episode_Reward/joint_torques: 3.9496
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0033
+     Metrics/base_velocity/error_vel_xy: 0.6998
+    Metrics/base_velocity/error_vel_yaw: 0.8418
+           Episode_Termination/time_out: 0.0445
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9563
+--------------------------------------------------------------------------------
+                         Iteration time: 1.81s
+                           Time elapsed: 0:00:25
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1277952 
+                       Steps per second: 53475 
+                        Collection time: 1.698s 
+                          Learning time: 0.140s 
+                        Mean value loss: 1189765.2625
+                    Mean surrogate loss: -0.0118
+                      Mean entropy loss: 18.8877
+                            Mean reward: 6175.13
+                    Mean episode length: 53.69
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2753
+        Episode_Reward/flat_orientation: 0.0247
+               Episode_Reward/joint_acc: 287.0885
+             Episode_Reward/action_rate: 0.0235
+           Episode_Reward/joint_torques: 4.1361
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0026
+     Metrics/base_velocity/error_vel_xy: 0.7158
+    Metrics/base_velocity/error_vel_yaw: 0.8283
+           Episode_Termination/time_out: 0.0450
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9563
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:27
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1376256 
+                       Steps per second: 53822 
+                        Collection time: 1.688s 
+                          Learning time: 0.139s 
+                        Mean value loss: 1530271.7812
+                    Mean surrogate loss: -0.0108
+                      Mean entropy loss: 18.9066
+                            Mean reward: 7129.56
+                    Mean episode length: 55.13
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2780
+        Episode_Reward/flat_orientation: 0.0251
+               Episode_Reward/joint_acc: 323.0458
+             Episode_Reward/action_rate: 0.0254
+           Episode_Reward/joint_torques: 4.3249
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0027
+     Metrics/base_velocity/error_vel_xy: 0.6980
+    Metrics/base_velocity/error_vel_yaw: 0.8367
+           Episode_Termination/time_out: 0.0423
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9586
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:00:28
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1474560 
+                       Steps per second: 52966 
+                        Collection time: 1.722s 
+                          Learning time: 0.134s 
+                        Mean value loss: 1936085.1750
+                    Mean surrogate loss: -0.0078
+                      Mean entropy loss: 18.9119
+                            Mean reward: 7592.94
+                    Mean episode length: 53.00
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2742
+        Episode_Reward/flat_orientation: 0.0248
+               Episode_Reward/joint_acc: 361.5153
+             Episode_Reward/action_rate: 0.0271
+           Episode_Reward/joint_torques: 4.4453
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0061
+     Metrics/base_velocity/error_vel_xy: 0.7110
+    Metrics/base_velocity/error_vel_yaw: 0.8220
+           Episode_Termination/time_out: 0.0396
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9612
+--------------------------------------------------------------------------------
+                         Iteration time: 1.86s
+                           Time elapsed: 0:00:30
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1572864 
+                       Steps per second: 53455 
+                        Collection time: 1.697s 
+                          Learning time: 0.142s 
+                        Mean value loss: 2803062.0500
+                    Mean surrogate loss: -0.0063
+                      Mean entropy loss: 18.9138
+                            Mean reward: 9346.06
+                    Mean episode length: 53.90
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2744
+        Episode_Reward/flat_orientation: 0.0248
+               Episode_Reward/joint_acc: 412.8345
+             Episode_Reward/action_rate: 0.0300
+           Episode_Reward/joint_torques: 4.6533
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0044
+     Metrics/base_velocity/error_vel_xy: 0.7026
+    Metrics/base_velocity/error_vel_yaw: 0.8450
+           Episode_Termination/time_out: 0.0416
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9590
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:32
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1671168 
+                       Steps per second: 53905 
+                        Collection time: 1.689s 
+                          Learning time: 0.135s 
+                        Mean value loss: 4130798.4625
+                    Mean surrogate loss: -0.0055
+                      Mean entropy loss: 18.9147
+                            Mean reward: 11105.64
+                    Mean episode length: 53.48
+                        Mean action std: 1.19
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2740
+        Episode_Reward/flat_orientation: 0.0247
+               Episode_Reward/joint_acc: 488.6201
+             Episode_Reward/action_rate: 0.0342
+           Episode_Reward/joint_torques: 4.9540
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0042
+     Metrics/base_velocity/error_vel_xy: 0.7085
+    Metrics/base_velocity/error_vel_yaw: 0.8381
+           Episode_Termination/time_out: 0.0458
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9549
+--------------------------------------------------------------------------------
+                         Iteration time: 1.82s
+                           Time elapsed: 0:00:34
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1769472 
+                       Steps per second: 53480 
+                        Collection time: 1.703s 
+                          Learning time: 0.135s 
+                        Mean value loss: 5525299.4750
+                    Mean surrogate loss: -0.0064
+                      Mean entropy loss: 18.9155
+                            Mean reward: 12154.28
+                    Mean episode length: 51.69
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2734
+        Episode_Reward/flat_orientation: 0.0246
+               Episode_Reward/joint_acc: 576.3369
+             Episode_Reward/action_rate: 0.0400
+           Episode_Reward/joint_torques: 5.3239
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0043
+     Metrics/base_velocity/error_vel_xy: 0.7125
+    Metrics/base_velocity/error_vel_yaw: 0.8445
+           Episode_Termination/time_out: 0.0451
+        Episode_Termination/base_height: 0.0000
+    Episode_Termination/bad_orientation: 0.9554
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:36
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1867776 
+                       Steps per second: 53535 
+                        Collection time: 1.700s 
+                          Learning time: 0.137s 
+                        Mean value loss: 6432613.3000
+                    Mean surrogate loss: -0.0074
+                      Mean entropy loss: 18.9076
+                            Mean reward: 14139.67
+                    Mean episode length: 51.79
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2709
+        Episode_Reward/flat_orientation: 0.0245
+               Episode_Reward/joint_acc: 653.8179
+             Episode_Reward/action_rate: 0.0453
+           Episode_Reward/joint_torques: 5.5924
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0069
+     Metrics/base_velocity/error_vel_xy: 0.7117
+    Metrics/base_velocity/error_vel_yaw: 0.8385
+           Episode_Termination/time_out: 0.0452
+        Episode_Termination/base_height: 0.0002
+    Episode_Termination/bad_orientation: 0.9558
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:38
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 1966080 
+                       Steps per second: 53092 
+                        Collection time: 1.716s 
+                          Learning time: 0.135s 
+                        Mean value loss: 7222225.3750
+                    Mean surrogate loss: -0.0064
+                      Mean entropy loss: 18.8874
+                            Mean reward: 15486.09
+                    Mean episode length: 54.61
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2768
+        Episode_Reward/flat_orientation: 0.0250
+               Episode_Reward/joint_acc: 711.5463
+             Episode_Reward/action_rate: 0.0501
+           Episode_Reward/joint_torques: 5.8872
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0059
+     Metrics/base_velocity/error_vel_xy: 0.7177
+    Metrics/base_velocity/error_vel_yaw: 0.8478
+           Episode_Termination/time_out: 0.0407
+        Episode_Termination/base_height: 0.0003
+    Episode_Termination/bad_orientation: 0.9607
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:39
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2064384 
+                       Steps per second: 53150 
+                        Collection time: 1.712s 
+                          Learning time: 0.138s 
+                        Mean value loss: 7841323.3500
+                    Mean surrogate loss: -0.0070
+                      Mean entropy loss: 18.8769
+                            Mean reward: 15201.22
+                    Mean episode length: 50.96
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2778
+        Episode_Reward/flat_orientation: 0.0252
+               Episode_Reward/joint_acc: 776.8293
+             Episode_Reward/action_rate: 0.0545
+           Episode_Reward/joint_torques: 6.0946
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0070
+     Metrics/base_velocity/error_vel_xy: 0.7150
+    Metrics/base_velocity/error_vel_yaw: 0.8242
+           Episode_Termination/time_out: 0.0376
+        Episode_Termination/base_height: 0.0003
+    Episode_Termination/bad_orientation: 0.9634
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:41
+                                    ETA: 0:00:00
+
+  iter   20 | step  2064384 | rew 17551.428 | len  70.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev 0.0014 | 46236 steps/s
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2162688 
+                       Steps per second: 51640 
+                        Collection time: 1.756s 
+                          Learning time: 0.148s 
+                        Mean value loss: 9030368.4500
+                    Mean surrogate loss: -0.0056
+                      Mean entropy loss: 18.8460
+                            Mean reward: 17719.80
+                    Mean episode length: 53.91
+                        Mean action std: 1.18
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2741
+        Episode_Reward/flat_orientation: 0.0247
+               Episode_Reward/joint_acc: 799.5825
+             Episode_Reward/action_rate: 0.0569
+           Episode_Reward/joint_torques: 6.2198
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0110
+     Metrics/base_velocity/error_vel_xy: 0.7148
+    Metrics/base_velocity/error_vel_yaw: 0.8268
+           Episode_Termination/time_out: 0.0397
+        Episode_Termination/base_height: 0.0009
+    Episode_Termination/bad_orientation: 0.9605
+--------------------------------------------------------------------------------
+                         Iteration time: 1.90s
+                           Time elapsed: 0:00:43
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2260992 
+                       Steps per second: 52655 
+                        Collection time: 1.732s 
+                          Learning time: 0.135s 
+                        Mean value loss: 9675291.7000
+                    Mean surrogate loss: -0.0019
+                      Mean entropy loss: 18.8156
+                            Mean reward: 18859.48
+                    Mean episode length: 54.76
+                        Mean action std: 1.17
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2782
+        Episode_Reward/flat_orientation: 0.0249
+               Episode_Reward/joint_acc: 858.5760
+             Episode_Reward/action_rate: 0.0618
+           Episode_Reward/joint_torques: 6.4659
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0096
+     Metrics/base_velocity/error_vel_xy: 0.7074
+    Metrics/base_velocity/error_vel_yaw: 0.8381
+           Episode_Termination/time_out: 0.0418
+        Episode_Termination/base_height: 0.0028
+    Episode_Termination/bad_orientation: 0.9583
+--------------------------------------------------------------------------------
+                         Iteration time: 1.87s
+                           Time elapsed: 0:00:45
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2359296 
+                       Steps per second: 53469 
+                        Collection time: 1.699s 
+                          Learning time: 0.140s 
+                        Mean value loss: 10096712.7500
+                    Mean surrogate loss: -0.0033
+                      Mean entropy loss: 18.7709
+                            Mean reward: 18984.69
+                    Mean episode length: 54.52
+                        Mean action std: 1.17
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2791
+        Episode_Reward/flat_orientation: 0.0251
+               Episode_Reward/joint_acc: 897.5275
+             Episode_Reward/action_rate: 0.0648
+           Episode_Reward/joint_torques: 6.5873
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0087
+     Metrics/base_velocity/error_vel_xy: 0.6992
+    Metrics/base_velocity/error_vel_yaw: 0.8365
+           Episode_Termination/time_out: 0.0430
+        Episode_Termination/base_height: 0.0036
+    Episode_Termination/bad_orientation: 0.9570
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:47
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2457600 
+                       Steps per second: 53713 
+                        Collection time: 1.691s 
+                          Learning time: 0.139s 
+                        Mean value loss: 10820933.5500
+                    Mean surrogate loss: -0.0036
+                      Mean entropy loss: 18.7340
+                            Mean reward: 19512.92
+                    Mean episode length: 55.07
+                        Mean action std: 1.17
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2793
+        Episode_Reward/flat_orientation: 0.0249
+               Episode_Reward/joint_acc: 927.3241
+             Episode_Reward/action_rate: 0.0670
+           Episode_Reward/joint_torques: 6.7326
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0109
+     Metrics/base_velocity/error_vel_xy: 0.6932
+    Metrics/base_velocity/error_vel_yaw: 0.8392
+           Episode_Termination/time_out: 0.0458
+        Episode_Termination/base_height: 0.0031
+    Episode_Termination/bad_orientation: 0.9546
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:00:49
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2555904 
+                       Steps per second: 53530 
+                        Collection time: 1.700s 
+                          Learning time: 0.137s 
+                        Mean value loss: 11655037.6000
+                    Mean surrogate loss: -0.0016
+                      Mean entropy loss: 18.7031
+                            Mean reward: 19466.10
+                    Mean episode length: 52.54
+                        Mean action std: 1.16
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2789
+        Episode_Reward/flat_orientation: 0.0250
+               Episode_Reward/joint_acc: 961.3149
+             Episode_Reward/action_rate: 0.0697
+           Episode_Reward/joint_torques: 6.8208
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0077
+     Metrics/base_velocity/error_vel_xy: 0.7169
+    Metrics/base_velocity/error_vel_yaw: 0.8195
+           Episode_Termination/time_out: 0.0452
+        Episode_Termination/base_height: 0.0048
+    Episode_Termination/bad_orientation: 0.9554
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:51
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2654208 
+                       Steps per second: 53094 
+                        Collection time: 1.710s 
+                          Learning time: 0.141s 
+                        Mean value loss: 12357792.1000
+                    Mean surrogate loss: -0.0018
+                      Mean entropy loss: 18.6800
+                            Mean reward: 20467.05
+                    Mean episode length: 53.07
+                        Mean action std: 1.16
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2798
+        Episode_Reward/flat_orientation: 0.0249
+               Episode_Reward/joint_acc: 1000.7408
+             Episode_Reward/action_rate: 0.0733
+           Episode_Reward/joint_torques: 6.9645
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0081
+     Metrics/base_velocity/error_vel_xy: 0.7106
+    Metrics/base_velocity/error_vel_yaw: 0.8447
+           Episode_Termination/time_out: 0.0408
+        Episode_Termination/base_height: 0.0091
+    Episode_Termination/bad_orientation: 0.9581
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:52
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2752512 
+                       Steps per second: 52423 
+                        Collection time: 1.741s 
+                          Learning time: 0.135s 
+                        Mean value loss: 13082517.3000
+                    Mean surrogate loss: -0.0026
+                      Mean entropy loss: 18.6627
+                            Mean reward: 22309.96
+                    Mean episode length: 55.36
+                        Mean action std: 1.16
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2828
+        Episode_Reward/flat_orientation: 0.0251
+               Episode_Reward/joint_acc: 1040.4564
+             Episode_Reward/action_rate: 0.0771
+           Episode_Reward/joint_torques: 7.1499
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0107
+     Metrics/base_velocity/error_vel_xy: 0.7038
+    Metrics/base_velocity/error_vel_yaw: 0.8307
+           Episode_Termination/time_out: 0.0376
+        Episode_Termination/base_height: 0.0141
+    Episode_Termination/bad_orientation: 0.9584
+--------------------------------------------------------------------------------
+                         Iteration time: 1.88s
+                           Time elapsed: 0:00:54
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2850816 
+                       Steps per second: 53165 
+                        Collection time: 1.711s 
+                          Learning time: 0.138s 
+                        Mean value loss: 13870292.5000
+                    Mean surrogate loss: -0.0046
+                      Mean entropy loss: 18.6191
+                            Mean reward: 22233.28
+                    Mean episode length: 52.53
+                        Mean action std: 1.15
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2899
+        Episode_Reward/flat_orientation: 0.0257
+               Episode_Reward/joint_acc: 1096.2278
+             Episode_Reward/action_rate: 0.0821
+           Episode_Reward/joint_torques: 7.4105
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0094
+     Metrics/base_velocity/error_vel_xy: 0.7068
+    Metrics/base_velocity/error_vel_yaw: 0.8291
+           Episode_Termination/time_out: 0.0397
+        Episode_Termination/base_height: 0.0189
+    Episode_Termination/bad_orientation: 0.9549
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:00:56
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 2949120 
+                       Steps per second: 53450 
+                        Collection time: 1.709s 
+                          Learning time: 0.130s 
+                        Mean value loss: 14204338.7500
+                    Mean surrogate loss: -0.0040
+                      Mean entropy loss: 18.5781
+                            Mean reward: 22680.99
+                    Mean episode length: 55.19
+                        Mean action std: 1.15
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2900
+        Episode_Reward/flat_orientation: 0.0255
+               Episode_Reward/joint_acc: 1126.7667
+             Episode_Reward/action_rate: 0.0852
+           Episode_Reward/joint_torques: 7.4921
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0085
+     Metrics/base_velocity/error_vel_xy: 0.7082
+    Metrics/base_velocity/error_vel_yaw: 0.8365
+           Episode_Termination/time_out: 0.0434
+        Episode_Termination/base_height: 0.0240
+    Episode_Termination/bad_orientation: 0.9510
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:00:58
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3047424 
+                       Steps per second: 54166 
+                        Collection time: 1.680s 
+                          Learning time: 0.135s 
+                        Mean value loss: 14772924.4500
+                    Mean surrogate loss: -0.0040
+                      Mean entropy loss: 18.5432
+                            Mean reward: 22570.38
+                    Mean episode length: 55.89
+                        Mean action std: 1.15
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2927
+        Episode_Reward/flat_orientation: 0.0255
+               Episode_Reward/joint_acc: 1147.2634
+             Episode_Reward/action_rate: 0.0879
+           Episode_Reward/joint_torques: 7.6581
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0059
+     Metrics/base_velocity/error_vel_xy: 0.6993
+    Metrics/base_velocity/error_vel_yaw: 0.8541
+           Episode_Termination/time_out: 0.0460
+        Episode_Termination/base_height: 0.0297
+    Episode_Termination/bad_orientation: 0.9458
+--------------------------------------------------------------------------------
+                         Iteration time: 1.81s
+                           Time elapsed: 0:01:00
+                                    ETA: 0:00:00
+
+  iter   30 | step  3047424 | rew 25128.035 | len  54.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev 0.0037 | 48040 steps/s
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3145728 
+                       Steps per second: 53844 
+                        Collection time: 1.687s 
+                          Learning time: 0.138s 
+                        Mean value loss: 15371831.2500
+                    Mean surrogate loss: -0.0035
+                      Mean entropy loss: 18.5051
+                            Mean reward: 24754.86
+                    Mean episode length: 56.75
+                        Mean action std: 1.14
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2963
+        Episode_Reward/flat_orientation: 0.0262
+               Episode_Reward/joint_acc: 1200.6097
+             Episode_Reward/action_rate: 0.0906
+           Episode_Reward/joint_torques: 7.7682
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0066
+     Metrics/base_velocity/error_vel_xy: 0.7219
+    Metrics/base_velocity/error_vel_yaw: 0.8390
+           Episode_Termination/time_out: 0.0465
+        Episode_Termination/base_height: 0.0350
+    Episode_Termination/bad_orientation: 0.9411
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:01:02
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3244032 
+                       Steps per second: 53918 
+                        Collection time: 1.688s 
+                          Learning time: 0.135s 
+                        Mean value loss: 15935231.5000
+                    Mean surrogate loss: 0.0006
+                      Mean entropy loss: 18.4485
+                            Mean reward: 25472.23
+                    Mean episode length: 58.23
+                        Mean action std: 1.14
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.2967
+        Episode_Reward/flat_orientation: 0.0260
+               Episode_Reward/joint_acc: 1216.9524
+             Episode_Reward/action_rate: 0.0923
+           Episode_Reward/joint_torques: 7.8755
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0066
+     Metrics/base_velocity/error_vel_xy: 0.7102
+    Metrics/base_velocity/error_vel_yaw: 0.8305
+           Episode_Termination/time_out: 0.0454
+        Episode_Termination/base_height: 0.0429
+    Episode_Termination/bad_orientation: 0.9386
+--------------------------------------------------------------------------------
+                         Iteration time: 1.82s
+                           Time elapsed: 0:01:03
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3342336 
+                       Steps per second: 53948 
+                        Collection time: 1.687s 
+                          Learning time: 0.136s 
+                        Mean value loss: 16588120.6500
+                    Mean surrogate loss: -0.0051
+                      Mean entropy loss: 18.4220
+                            Mean reward: 26915.34
+                    Mean episode length: 57.51
+                        Mean action std: 1.13
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3010
+        Episode_Reward/flat_orientation: 0.0262
+               Episode_Reward/joint_acc: 1256.2134
+             Episode_Reward/action_rate: 0.0958
+           Episode_Reward/joint_torques: 8.0168
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0086
+     Metrics/base_velocity/error_vel_xy: 0.7089
+    Metrics/base_velocity/error_vel_yaw: 0.8450
+           Episode_Termination/time_out: 0.0433
+        Episode_Termination/base_height: 0.0505
+    Episode_Termination/bad_orientation: 0.9371
+--------------------------------------------------------------------------------
+                         Iteration time: 1.82s
+                           Time elapsed: 0:01:05
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3440640 
+                       Steps per second: 52248 
+                        Collection time: 1.744s 
+                          Learning time: 0.138s 
+                        Mean value loss: 17211595.6000
+                    Mean surrogate loss: -0.0035
+                      Mean entropy loss: 18.3678
+                            Mean reward: 27862.24
+                    Mean episode length: 58.52
+                        Mean action std: 1.13
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3050
+        Episode_Reward/flat_orientation: 0.0264
+               Episode_Reward/joint_acc: 1309.6035
+             Episode_Reward/action_rate: 0.0993
+           Episode_Reward/joint_torques: 8.1893
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0100
+     Metrics/base_velocity/error_vel_xy: 0.7103
+    Metrics/base_velocity/error_vel_yaw: 0.8381
+           Episode_Termination/time_out: 0.0402
+        Episode_Termination/base_height: 0.0641
+    Episode_Termination/bad_orientation: 0.9342
+--------------------------------------------------------------------------------
+                         Iteration time: 1.88s
+                           Time elapsed: 0:01:07
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3538944 
+                       Steps per second: 51591 
+                        Collection time: 1.759s 
+                          Learning time: 0.147s 
+                        Mean value loss: 17674701.3000
+                    Mean surrogate loss: -0.0024
+                      Mean entropy loss: 18.3274
+                            Mean reward: 27204.70
+                    Mean episode length: 57.70
+                        Mean action std: 1.13
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3049
+        Episode_Reward/flat_orientation: 0.0261
+               Episode_Reward/joint_acc: 1329.4786
+             Episode_Reward/action_rate: 0.1012
+           Episode_Reward/joint_torques: 8.2651
+             Episode_Reward/base_height: 0.0004
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0081
+     Metrics/base_velocity/error_vel_xy: 0.7105
+    Metrics/base_velocity/error_vel_yaw: 0.8440
+           Episode_Termination/time_out: 0.0465
+        Episode_Termination/base_height: 0.0836
+    Episode_Termination/bad_orientation: 0.9192
+--------------------------------------------------------------------------------
+                         Iteration time: 1.91s
+                           Time elapsed: 0:01:09
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3637248 
+                       Steps per second: 53434 
+                        Collection time: 1.702s 
+                          Learning time: 0.138s 
+                        Mean value loss: 18116939.5000
+                    Mean surrogate loss: -0.0012
+                      Mean entropy loss: 18.2698
+                            Mean reward: 27341.36
+                    Mean episode length: 56.79
+                        Mean action std: 1.12
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3126
+        Episode_Reward/flat_orientation: 0.0266
+               Episode_Reward/joint_acc: 1363.8339
+             Episode_Reward/action_rate: 0.1048
+           Episode_Reward/joint_torques: 8.4775
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0092
+     Metrics/base_velocity/error_vel_xy: 0.7120
+    Metrics/base_velocity/error_vel_yaw: 0.8409
+           Episode_Termination/time_out: 0.0520
+        Episode_Termination/base_height: 0.1031
+    Episode_Termination/bad_orientation: 0.9032
+--------------------------------------------------------------------------------
+                         Iteration time: 1.84s
+                           Time elapsed: 0:01:11
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3735552 
+                       Steps per second: 52873 
+                        Collection time: 1.720s 
+                          Learning time: 0.139s 
+                        Mean value loss: 18662788.9000
+                    Mean surrogate loss: 0.0005
+                      Mean entropy loss: 18.2326
+                            Mean reward: 27897.97
+                    Mean episode length: 57.86
+                        Mean action std: 1.12
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3145
+        Episode_Reward/flat_orientation: 0.0266
+               Episode_Reward/joint_acc: 1395.3340
+             Episode_Reward/action_rate: 0.1065
+           Episode_Reward/joint_torques: 8.5622
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0090
+     Metrics/base_velocity/error_vel_xy: 0.7026
+    Metrics/base_velocity/error_vel_yaw: 0.8579
+           Episode_Termination/time_out: 0.0506
+        Episode_Termination/base_height: 0.1167
+    Episode_Termination/bad_orientation: 0.8941
+--------------------------------------------------------------------------------
+                         Iteration time: 1.86s
+                           Time elapsed: 0:01:13
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3833856 
+                       Steps per second: 48649 
+                        Collection time: 1.883s 
+                          Learning time: 0.137s 
+                        Mean value loss: 18799754.3000
+                    Mean surrogate loss: -0.0037
+                      Mean entropy loss: 18.2033
+                            Mean reward: 29663.36
+                    Mean episode length: 59.27
+                        Mean action std: 1.12
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3174
+        Episode_Reward/flat_orientation: 0.0272
+               Episode_Reward/joint_acc: 1439.9597
+             Episode_Reward/action_rate: 0.1085
+           Episode_Reward/joint_torques: 8.6680
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0145
+     Metrics/base_velocity/error_vel_xy: 0.7134
+    Metrics/base_velocity/error_vel_yaw: 0.8631
+           Episode_Termination/time_out: 0.0496
+        Episode_Termination/base_height: 0.1329
+    Episode_Termination/bad_orientation: 0.8855
+--------------------------------------------------------------------------------
+                         Iteration time: 2.02s
+                           Time elapsed: 0:01:15
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 3932160 
+                       Steps per second: 52110 
+                        Collection time: 1.745s 
+                          Learning time: 0.141s 
+                        Mean value loss: 19584592.3000
+                    Mean surrogate loss: -0.0047
+                      Mean entropy loss: 18.1606
+                            Mean reward: 30455.90
+                    Mean episode length: 59.98
+                        Mean action std: 1.11
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3195
+        Episode_Reward/flat_orientation: 0.0270
+               Episode_Reward/joint_acc: 1451.2007
+             Episode_Reward/action_rate: 0.1104
+           Episode_Reward/joint_torques: 8.7665
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0107
+     Metrics/base_velocity/error_vel_xy: 0.7014
+    Metrics/base_velocity/error_vel_yaw: 0.8545
+           Episode_Termination/time_out: 0.0489
+        Episode_Termination/base_height: 0.1474
+    Episode_Termination/bad_orientation: 0.8786
+--------------------------------------------------------------------------------
+                         Iteration time: 1.89s
+                           Time elapsed: 0:01:17
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4030464 
+                       Steps per second: 53101 
+                        Collection time: 1.712s 
+                          Learning time: 0.139s 
+                        Mean value loss: 20179287.7000
+                    Mean surrogate loss: -0.0022
+                      Mean entropy loss: 18.1277
+                            Mean reward: 28920.89
+                    Mean episode length: 55.91
+                        Mean action std: 1.11
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3242
+        Episode_Reward/flat_orientation: 0.0272
+               Episode_Reward/joint_acc: 1489.6853
+             Episode_Reward/action_rate: 0.1145
+           Episode_Reward/joint_torques: 9.0034
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0118
+     Metrics/base_velocity/error_vel_xy: 0.7166
+    Metrics/base_velocity/error_vel_yaw: 0.8522
+           Episode_Termination/time_out: 0.0504
+        Episode_Termination/base_height: 0.1672
+    Episode_Termination/bad_orientation: 0.8658
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:01:18
+                                    ETA: 0:00:00
+
+  iter   40 | step  4030464 | rew 34563.414 | len  83.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev 0.0084 | 48854 steps/s
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4128768 
+                       Steps per second: 52675 
+                        Collection time: 1.728s 
+                          Learning time: 0.139s 
+                        Mean value loss: 20556792.5000
+                    Mean surrogate loss: 0.0009
+                      Mean entropy loss: 18.0970
+                            Mean reward: 31292.76
+                    Mean episode length: 61.46
+                        Mean action std: 1.11
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3258
+        Episode_Reward/flat_orientation: 0.0272
+               Episode_Reward/joint_acc: 1514.1195
+             Episode_Reward/action_rate: 0.1169
+           Episode_Reward/joint_torques: 9.0631
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0101
+     Metrics/base_velocity/error_vel_xy: 0.7076
+    Metrics/base_velocity/error_vel_yaw: 0.8606
+           Episode_Termination/time_out: 0.0500
+        Episode_Termination/base_height: 0.1780
+    Episode_Termination/bad_orientation: 0.8585
+--------------------------------------------------------------------------------
+                         Iteration time: 1.87s
+                           Time elapsed: 0:01:20
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4227072 
+                       Steps per second: 53869 
+                        Collection time: 1.692s 
+                          Learning time: 0.133s 
+                        Mean value loss: 20623339.5000
+                    Mean surrogate loss: -0.0013
+                      Mean entropy loss: 18.0679
+                            Mean reward: 30902.33
+                    Mean episode length: 60.87
+                        Mean action std: 1.10
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3230
+        Episode_Reward/flat_orientation: 0.0270
+               Episode_Reward/joint_acc: 1517.9250
+             Episode_Reward/action_rate: 0.1169
+           Episode_Reward/joint_torques: 9.0332
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0067
+     Metrics/base_velocity/error_vel_xy: 0.7022
+    Metrics/base_velocity/error_vel_yaw: 0.8697
+           Episode_Termination/time_out: 0.0505
+        Episode_Termination/base_height: 0.1801
+    Episode_Termination/bad_orientation: 0.8542
+--------------------------------------------------------------------------------
+                         Iteration time: 1.82s
+                           Time elapsed: 0:01:22
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4325376 
+                       Steps per second: 52364 
+                        Collection time: 1.732s 
+                          Learning time: 0.145s 
+                        Mean value loss: 21362069.2000
+                    Mean surrogate loss: -0.0045
+                      Mean entropy loss: 18.0418
+                            Mean reward: 32062.14
+                    Mean episode length: 63.79
+                        Mean action std: 1.10
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3254
+        Episode_Reward/flat_orientation: 0.0269
+               Episode_Reward/joint_acc: 1552.9658
+             Episode_Reward/action_rate: 0.1189
+           Episode_Reward/joint_torques: 9.1527
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0082
+     Metrics/base_velocity/error_vel_xy: 0.7071
+    Metrics/base_velocity/error_vel_yaw: 0.8601
+           Episode_Termination/time_out: 0.0511
+        Episode_Termination/base_height: 0.1883
+    Episode_Termination/bad_orientation: 0.8457
+--------------------------------------------------------------------------------
+                         Iteration time: 1.88s
+                           Time elapsed: 0:01:24
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4423680 
+                       Steps per second: 52678 
+                        Collection time: 1.730s 
+                          Learning time: 0.136s 
+                        Mean value loss: 21709717.6000
+                    Mean surrogate loss: -0.0035
+                      Mean entropy loss: 17.9943
+                            Mean reward: 33451.34
+                    Mean episode length: 60.48
+                        Mean action std: 1.10
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3259
+        Episode_Reward/flat_orientation: 0.0272
+               Episode_Reward/joint_acc: 1567.0623
+             Episode_Reward/action_rate: 0.1193
+           Episode_Reward/joint_torques: 9.1572
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0092
+     Metrics/base_velocity/error_vel_xy: 0.7112
+    Metrics/base_velocity/error_vel_yaw: 0.8955
+           Episode_Termination/time_out: 0.0555
+        Episode_Termination/base_height: 0.2033
+    Episode_Termination/bad_orientation: 0.8353
+--------------------------------------------------------------------------------
+                         Iteration time: 1.87s
+                           Time elapsed: 0:01:26
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4521984 
+                       Steps per second: 53670 
+                        Collection time: 1.693s 
+                          Learning time: 0.139s 
+                        Mean value loss: 22428671.5000
+                    Mean surrogate loss: 0.0005
+                      Mean entropy loss: 17.9509
+                            Mean reward: 32907.34
+                    Mean episode length: 61.15
+                        Mean action std: 1.09
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3287
+        Episode_Reward/flat_orientation: 0.0275
+               Episode_Reward/joint_acc: 1599.9072
+             Episode_Reward/action_rate: 0.1203
+           Episode_Reward/joint_torques: 9.2056
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0074
+     Metrics/base_velocity/error_vel_xy: 0.7021
+    Metrics/base_velocity/error_vel_yaw: 0.8781
+           Episode_Termination/time_out: 0.0560
+        Episode_Termination/base_height: 0.2258
+    Episode_Termination/bad_orientation: 0.8213
+--------------------------------------------------------------------------------
+                         Iteration time: 1.83s
+                           Time elapsed: 0:01:28
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4620288 
+                       Steps per second: 53028 
+                        Collection time: 1.715s 
+                          Learning time: 0.139s 
+                        Mean value loss: 22786840.7000
+                    Mean surrogate loss: -0.0003
+                      Mean entropy loss: 17.9304
+                            Mean reward: 36056.38
+                    Mean episode length: 62.24
+                        Mean action std: 1.09
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3321
+        Episode_Reward/flat_orientation: 0.0277
+               Episode_Reward/joint_acc: 1647.9926
+             Episode_Reward/action_rate: 0.1226
+           Episode_Reward/joint_torques: 9.4314
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0073
+     Metrics/base_velocity/error_vel_xy: 0.7118
+    Metrics/base_velocity/error_vel_yaw: 0.8602
+           Episode_Termination/time_out: 0.0553
+        Episode_Termination/base_height: 0.2392
+    Episode_Termination/bad_orientation: 0.8087
+--------------------------------------------------------------------------------
+                         Iteration time: 1.85s
+                           Time elapsed: 0:01:30
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4718592 
+                       Steps per second: 51771 
+                        Collection time: 1.759s 
+                          Learning time: 0.140s 
+                        Mean value loss: 23897883.6000
+                    Mean surrogate loss: -0.0012
+                      Mean entropy loss: 17.8704
+                            Mean reward: 32882.15
+                    Mean episode length: 61.83
+                        Mean action std: 1.09
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3304
+        Episode_Reward/flat_orientation: 0.0276
+               Episode_Reward/joint_acc: 1653.7019
+             Episode_Reward/action_rate: 0.1234
+           Episode_Reward/joint_torques: 9.2966
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0044
+     Metrics/base_velocity/error_vel_xy: 0.7123
+    Metrics/base_velocity/error_vel_yaw: 0.8791
+           Episode_Termination/time_out: 0.0554
+        Episode_Termination/base_height: 0.2567
+    Episode_Termination/bad_orientation: 0.7898
+--------------------------------------------------------------------------------
+                         Iteration time: 1.90s
+                           Time elapsed: 0:01:31
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4816896 
+                       Steps per second: 52282 
+                        Collection time: 1.737s 
+                          Learning time: 0.143s 
+                        Mean value loss: 23919253.5000
+                    Mean surrogate loss: -0.0006
+                      Mean entropy loss: 17.8461
+                            Mean reward: 36108.72
+                    Mean episode length: 62.30
+                        Mean action std: 1.08
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3378
+        Episode_Reward/flat_orientation: 0.0281
+               Episode_Reward/joint_acc: 1699.8510
+             Episode_Reward/action_rate: 0.1270
+           Episode_Reward/joint_torques: 9.6571
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0072
+     Metrics/base_velocity/error_vel_xy: 0.7223
+    Metrics/base_velocity/error_vel_yaw: 0.8822
+           Episode_Termination/time_out: 0.0521
+        Episode_Termination/base_height: 0.2779
+    Episode_Termination/bad_orientation: 0.7782
+--------------------------------------------------------------------------------
+                         Iteration time: 1.88s
+                           Time elapsed: 0:01:33
+                                    ETA: 0:00:00
+
+Could not find git repository in C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\rsl_rl\__init__.py. Skipping.
+################################################################################
+[1m                             Learning iteration 0/1                             [0m 
+
+                            Total steps: 4915200 
+                       Steps per second: 52068 
+                        Collection time: 1.742s 
+                          Learning time: 0.146s 
+                        Mean value loss: 23974714.3000
+                    Mean surrogate loss: -0.0030
+                      Mean entropy loss: 17.8126
+                            Mean reward: 34984.73
+                    Mean episode length: 61.52
+                        Mean action std: 1.08
+        Episode_Reward/track_lin_vel_xy: 0.0000
+         Episode_Reward/track_ang_vel_z: 0.0000
+         Episode_Reward/joint_deviation: 0.3385
+        Episode_Reward/flat_orientation: 0.0282
+               Episode_Reward/joint_acc: 1733.8914
+             Episode_Reward/action_rate: 0.1282
+           Episode_Reward/joint_torques: 9.6562
+             Episode_Reward/base_height: 0.0005
+           Episode_Reward/feet_air_time: 0.0000
+        Episode_Reward/forward_progress: 0.0000
+                   Metrics/success_rate: 0.0032
+     Metrics/base_velocity/error_vel_xy: 0.7189
+    Metrics/base_velocity/error_vel_yaw: 0.8710
+           Episode_Termination/time_out: 0.0495
+        Episode_Termination/base_height: 0.2948
+    Episode_Termination/bad_orientation: 0.7714
+--------------------------------------------------------------------------------
+                         Iteration time: 1.89s
+                           Time elapsed: 0:01:35
+                                    ETA: 0:00:00
+
+  iter   49 | step  4915200 | rew 40688.371 | len  64.0 | vl 0.0000 | pg 0.0000 | ent 0.0000 | kl 0.0000 | ev 0.0139 | 49349 steps/s
+[IsaacLabRunner] Saved checkpoint: runs\balance\run_1793890643\model_0050.pt
+[IsaacLabRunner] Saved checkpoint: runs\balance\run_1793890643\model_final.pt
+[IsaacLabRunner] Wrote run.json: runs\balance\run_1793890643\run.json
+[run_balance] Training complete. run.json at runs\balance\run_1793890643\run.json
+The render interval (1) is smaller than the decimation (10). Multiple render calls will happen for each environment step. If this is not intended, set the render interval to be equal to the decimation.
+I: Initializing Version 2.74.0-release.7316+gl.ec99a64b
+I: Client ID: 7TX2OVXQ
+I: ThreadId(02) hub_client::client::Client::new Launching client mode=Shared with_cleaner=false cache_path=None cache_size=None
+I: ThreadId(03) launch self=Launcher { discovery_lock: RwLock { lock: RwLock { inner: File { handle: 0xe64, path: "\\\\?\\C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand.lock" } } }, mode: Shared, with_cleaner: false, config_file: "C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand-5BF5B7C7.config.json" } cmd="hub.exe" "--mode=shared" "--write-config" "C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand-5BF5B7C7.config.json" "--"
+I: Not using Hub: Hub not found
+I: Successfully created S3 provider for https://omniverse-content-production.s3-us-west-2.amazonaws.com
+I: Using CloudFront http://dcb18d6mfegct.cloudfront.net/, List = No
+Serving remote assets from the local cache under 'C:\Users\abhinand\AppData\Local\Temp'. Each copy is checked against the server before use; delete the directory to force a full re-download.
+C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\isaaclab_newton\cloner\newton_clone_utils.py:165: FutureWarning: Newton shape color replacement is enabled; this workaround will be deprecated in a future release.
+  replace_newton_builder_shape_colors(builder, stage)

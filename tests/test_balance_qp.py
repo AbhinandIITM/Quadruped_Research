@@ -5,9 +5,12 @@ Unit tests for the Single-Rigid-Body Dynamics (SRBD) QP force solver
 and analytic leg Jacobian calculations.
 """
 
+import os
 import time
 import unittest
+
 import numpy as np
+import pytest
 
 from go2_balance_qp import (
     QpBalanceConfig,
@@ -16,6 +19,7 @@ from go2_balance_qp import (
     skew_symmetric,
     ROBOT_MASS,
     GRAVITY,
+    model_total_mass,
 )
 from go2_champ_control import solve_ik, HIP_OFFSET
 
@@ -195,6 +199,50 @@ class TestBalanceQpAndJacobian(unittest.TestCase):
         # Stance legs FR (indices 0..2) and RL (indices 9..11) should produce non-zero support torques
         self.assertGreater(abs(torques[1]) + abs(torques[2]), 0.5)  # Thigh and calf pitch support
         self.assertGreater(abs(torques[10]) + abs(torques[11]), 0.5)
+
+
+class TestRobotMassMatchesModel(unittest.TestCase):
+    """Regression test for the ROBOT_MASS / model-mass drift defect.
+
+    ROBOT_MASS scales the QP's entire linear wrench target, so a stale constant
+    silently under- or over-compensates gravity. It previously read 12.0 kg while
+    the MuJoCo model totals 16.2764 kg, making the wrench ~42 N too light. Assert
+    the constant agrees with whatever XML the tests actually load.
+    """
+
+    def test_robot_mass_matches_loaded_model(self):
+        mujoco = pytest.importorskip("mujoco")
+        candidates = [
+            os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "unitree_go2",
+                "go2_description.xml",
+            ),
+            os.path.join("unitree_go2", "go2_description.xml"),
+        ]
+        xml_path = next((p for p in candidates if os.path.exists(p)), None)
+        if xml_path is None:
+            self.skipTest("go2_description.xml not available")
+        model = mujoco.MjModel.from_xml_path(str(xml_path))
+        model_mass = model_total_mass(model)
+        self.assertAlmostEqual(ROBOT_MASS, model_mass, places=3)
+        # The defect was an understatement; guard against it recurring.
+        self.assertGreaterEqual(ROBOT_MASS, 0.98 * model_mass)
+
+    def test_qp_balances_true_gravity(self):
+        """A level, static stance must lift exactly m*g, not the stale 12.0*g."""
+        solver = SingleRigidBodyQpSolver(QpBalanceConfig(mass=ROBOT_MASS))
+        feet = [
+            (0.1934, -0.0955, -0.52),
+            (0.1934, 0.0955, -0.52),
+            (-0.1934, -0.0955, -0.52),
+            (-0.1934, 0.0955, -0.52),
+        ]
+        forces = solver.solve(feet, [True] * 4, [0.0, 0.0, 0.0], [0.0, 0.0, 0.0])
+        self.assertAlmostEqual(float(np.sum(forces[:, 2])), ROBOT_MASS * GRAVITY, delta=1.5)
+        # Guard against the direction of the original defect: the old constant
+        # would have undersupported weight by ~42 N.
+        self.assertGreater(float(np.sum(forces[:, 2])), 12.0 * GRAVITY + 10.0)
 
 
 if __name__ == "__main__":

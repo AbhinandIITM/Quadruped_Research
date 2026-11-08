@@ -5,7 +5,6 @@ Unit tests for procedural terrain generation and elevation adaptation.
 """
 
 import unittest
-from pathlib import Path
 import mujoco
 
 from go2_terrain_generator import (

@@ -1,0 +1,39 @@
+{
+  "name": "waypoint_square",
+  "description": "Closed-loop 4-corner waypoint navigation (1.0, 0.0) -> (1.0, 1.0) -> (0.0, 1.0) -> (0.0, 0.0) with dynamic heading alignment and velocity scaling.",
+  "duration_s": 25.0,
+  "mode": "waypoint",
+  "waypoints": [
+    {
+      "x": 1.0,
+      "y": 0.0,
+      "tolerance": 0.15,
+      "speed": 0.30
+    },
+    {
+      "x": 1.0,
+      "y": 1.0,
+      "tolerance": 0.15,
+      "speed": 0.30
+    },
+    {
+      "x": 0.0,
+      "y": 1.0,
+      "tolerance": 0.15,
+      "speed": 0.30
+    },
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "tolerance": 0.15,
+      "speed": 0.25
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.18,
+    "max_pitch_rad": 0.18,
+    "min_path_length_m": 2.0
+  },
+  "notes": "min_path_length_m derivation: the route is a closed unit square starting at the origin, giving four 1.0 m legs = 4.0 m of cumulative travel for a base that actually visits every waypoint, while a stationary base accumulates ~0 m. The gate requires 50% of that ideal path (2.0 m) to absorb the start-up transient and the corner turns. Net displacement is deliberately NOT used: the route is closed (last waypoint is the start), so a correct run ends with ~0 net displacement, exactly like a stationary robot."
+}

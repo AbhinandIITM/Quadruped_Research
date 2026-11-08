@@ -5,10 +5,10 @@ Unit and integration tests for VLM spatial grounding, camera pinhole back-projec
 and multimodal waypoint command synthesis.
 """
 
+import json
 import math
 import os
 import unittest
-from pathlib import Path
 
 import mujoco
 import numpy as np
@@ -149,6 +149,118 @@ class TestVLMGeometryAndBackprojection(unittest.TestCase):
         dist_body = math.hypot(target.body_coords[0], target.body_coords[1])
         dist_waypoint = math.hypot(target.target_waypoint[0], target.target_waypoint[1])
         self.assertAlmostEqual(dist_body - dist_waypoint, 0.5, delta=0.02)
+
+
+class TestVLMWaypointFrame(unittest.TestCase):
+    """Regression tests for the navigation waypoint's reference frame.
+
+    The VLM branch of the system is a separate code path from the action
+    contract's validator, and it has two independent defects that this class
+    pins down.
+
+    First, the waypoint was computed in the robot BODY frame but stored in
+    ``MotionCommand.waypoint``, which ``WaypointNavigator`` consumes as a WORLD
+    coordinate and compares against the robot's world position.  That worked
+    only because every scenario so far started the robot at the origin with
+    zero yaw; with the robot anywhere else the navigator was chasing a point
+    that was offset by the robot's own position and rotated by its own yaw.
+
+    Second, the VLM's own ``json.loads`` calls did not install the
+    ``parse_constant`` guard that every client in ``go2_llm_commands`` uses, so
+    a ``NaN`` bounding-box coordinate was accepted and then clamped into a
+    plausible-looking value, pointing the robot at the wrong place.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        xml_content = """<mujoco model="vlm_frame_scene">
+          <include file="unitree_go2/go2_description.xml"/>
+          <worldbody>
+            <geom name="test_cylinder" type="cylinder" size="0.15 0.4" pos="2.0 0.3 0.4" rgba="0.9 0.1 0.1 1"/>
+          </worldbody>
+        </mujoco>"""
+        cls.model = mujoco.MjModel.from_xml_string(xml_content)
+        cls.data = mujoco.MjData(cls.model)
+        initialize_simulation_standing(cls.model, cls.data, body_height=0.28)
+        mujoco.mj_step(cls.model, cls.data)
+        cls.renderer = mujoco.Renderer(cls.model, height=120, width=160)
+
+    def _place_robot(self, x: float, y: float, yaw: float) -> None:
+        """Move the robot's free joint to (x, y) with the given yaw."""
+        qpos = self.data.qpos.copy()
+        qpos[0:3] = [x, y, qpos[2]]
+        half = yaw / 2.0
+        qpos[3:7] = [math.cos(half), 0.0, 0.0, math.sin(half)]
+        self.data.qpos[:] = qpos
+        mujoco.mj_forward(self.model, self.data)
+
+    def _ground(self, clearance_m: float = 0.5) -> Grounding3DTarget:
+        rgb, depth = capture_rgb_and_depth(self.renderer, self.data, camera_name="front_cam")
+        red_mask = (rgb[:, :, 0] > 100) & (rgb[:, :, 0] > rgb[:, :, 1] + 40)
+        v_idx, u_idx = np.where(red_mask)
+        self.assertGreater(len(u_idx), 0, "Red cylinder should be visible to front_cam")
+        box_2d = BoundingBox2D(
+            ymin=float(v_idx.min()) * 1000.0 / 120.0,
+            xmin=float(u_idx.min()) * 1000.0 / 160.0,
+            ymax=float(v_idx.max()) * 1000.0 / 120.0,
+            xmax=float(u_idx.max()) * 1000.0 / 160.0,
+        )
+        return ground_bounding_box(
+            box=box_2d,
+            depth_map=depth,
+            model=self.model,
+            data=self.data,
+            label="red cylinder",
+            clearance_m=clearance_m,
+        )
+
+    def test_waypoint_is_expressed_in_the_world_frame(self):
+        """With the robot translated and rotated, the waypoint must follow.
+
+        The pose is chosen so the cylinder stays inside the camera's field of
+        view: the robot is translated along +X and yawed slightly, which is
+        enough to separate the world-frame answer from the body-frame one.
+        """
+        robot_x, robot_y, yaw = 0.6, 0.0, 0.12
+        self._place_robot(robot_x, robot_y, yaw)
+
+        target = self._ground(clearance_m=0.5)
+
+        bx, by = target.body_coords[0], target.body_coords[1]
+        dist = math.hypot(bx, by)
+        scale = (dist - 0.5) / dist if dist > 0.5 else 0.0
+        body_wp_x, body_wp_y = bx * scale, by * scale
+
+        # The world-frame waypoint is the body-frame waypoint rotated by the
+        # robot's yaw and translated by the robot's world position.
+        expected_x = robot_x + math.cos(yaw) * body_wp_x - math.sin(yaw) * body_wp_y
+        expected_y = robot_y + math.sin(yaw) * body_wp_x + math.cos(yaw) * body_wp_y
+
+        self.assertAlmostEqual(target.target_waypoint[0], expected_x, delta=0.10)
+        self.assertAlmostEqual(target.target_waypoint[1], expected_y, delta=0.10)
+
+        # The old body-frame answer must be clearly different, otherwise this
+        # test would pass on the buggy implementation too.
+        self.assertNotAlmostEqual(target.target_waypoint[0], body_wp_x, delta=0.1)
+
+    def test_waypoint_stays_within_the_workspace_bound(self):
+        """The VLM path bypasses the shared validator, so the bound applies here."""
+        self._place_robot(0.0, 0.0, 0.0)
+        target = self._ground(clearance_m=0.5)
+        self.assertLessEqual(abs(target.target_waypoint[0]), 10.0)
+        self.assertLessEqual(abs(target.target_waypoint[1]), 10.0)
+        self.assertTrue(math.isfinite(target.target_waypoint[0]))
+        self.assertTrue(math.isfinite(target.target_waypoint[1]))
+
+    def test_nonfinite_bounding_box_coordinate_is_rejected(self):
+        """A NaN box coordinate must not be clamped into a plausible value."""
+        from go2_llm_commands import _reject_nonfinite_json_constant
+
+        with self.assertRaises(ValueError):
+            json.loads(
+                '{"box": [NaN, 100, 200, 300]}',
+                parse_constant=_reject_nonfinite_json_constant,
+            )
 
 
 class TestVLMGoalGrounder(unittest.TestCase):

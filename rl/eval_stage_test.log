@@ -1,0 +1,309 @@
+The render interval (1) is smaller than the decimation (10). Multiple render calls will happen for each environment step. If this is not intended, set the render interval to be equal to the decimation.
+I: Initializing Version 2.74.0-release.7316+gl.ec99a64b
+I: Client ID: C0PH9NQ7
+I: ThreadId(02) hub_client::client::Client::new Launching client mode=Shared with_cleaner=false cache_path=None cache_size=None
+I: ThreadId(03) launch self=Launcher { discovery_lock: RwLock { lock: RwLock { inner: File { handle: 0xe74, path: "\\\\?\\C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand.lock" } } }, mode: Shared, with_cleaner: false, config_file: "C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand-63E74192.config.json" } cmd="hub.exe" "--mode=shared" "--write-config" "C:\\Users\\abhinand\\AppData\\Local\\Temp\\hub-abhinand-63E74192.config.json" "--"
+I: Not using Hub: Hub not found
+I: Successfully created S3 provider for https://omniverse-content-production.s3-us-west-2.amazonaws.com
+I: Using CloudFront http://dcb18d6mfegct.cloudfront.net/, List = No
+Serving remote assets from the local cache under 'C:\Users\abhinand\AppData\Local\Temp'. Each copy is checked against the server before use; delete the directory to force a full re-download.
+C:\Users\abhinand\miniconda3\envs\isaac\Lib\site-packages\isaaclab_newton\cloner\newton_clone_utils.py:165: FutureWarning: Newton shape color replacement is enabled; this workaround will be deprecated in a future release.
+  replace_newton_builder_shape_colors(builder, stage)
+[eval_stage] stage=stand run_dir=runs\stand\seed_0 device=cuda episodes/speed=1 speeds=[0.0, 0.25, 0.5, 0.75, 1.0]
+[INFO]: Base environment:
+	Environment device    : cuda:0
+	Environment seed      : 0
+	Physics step-size     : 0.002
+	Rendering step-size   : 0.002
+	Environment step-size : 0.02
+[INFO]: Time taken for scene creation Last: 3.455466 s, Mean: 3.455466 s, Std: 0.000000 s, N: 1
+[INFO]: Scene manager:  <class InteractiveScene>
+	Number of environments: 1
+	Environment spacing   : 2.5
+	Source prim name      : /World/envs/env_0
+	Global prim paths     : ['/World/ground']
+	Replicate physics     : True
+Finalize builder took: Last: 0.015222 s, Mean: 0.015222 s, Std: 0.000000 s, N: 1
+Contact sensor construction took: Last: 0.002629 s, Mean: 0.002629 s, Std: 0.000000 s, N: 1
+Initialize solver took: Last: 1.058007 s, Mean: 1.058007 s, Std: 0.000000 s, N: 1
+[INFO]: Time taken for simulation start Last: 1.187407 s, Mean: 1.187407 s, Std: 0.000000 s, N: 1
+[INFO] Command Manager:  <CommandManager> contains 1 active terms.
++------------------------------------------------+
+|              Active Command Terms              |
++-------+---------------+------------------------+
+| Index | Name          |          Type          |
++-------+---------------+------------------------+
+|   0   | base_velocity | UniformVelocityCommand |
++-------+---------------+------------------------+
+
+[INFO] Event Manager:  <EventManager> contains 1 active terms.
++-------------------------------------+
+| Active Event Terms in Mode: 'reset' |
++-------+-----------------------------+
+| Index | Name                        |
++-------+-----------------------------+
+|   0   | randomize_mass              |
+|   1   | randomize_friction          |
+|   2   | randomize_joint_friction    |
+|   3   | randomize_motor_strength    |
+|   4   | push_robot                  |
+|   5   | reset_robot                 |
+|   6   | reset_joints                |
++-------+-----------------------------+
+
+[INFO] Recorder Manager:  <RecorderManager> contains 0 active terms.
++-----------------------+
+| Active Recorder Terms |
++------------+----------+
+|   Index    | Name     |
++------------+----------+
++------------+----------+
+
+[INFO] Action Manager:  <ActionManager> contains 1 active terms.
++---------------------------------+
+| Active Action Terms (shape: 12) |
++-------+-----------+-------------+
+| Index | Name      |   Dimension |
++-------+-----------+-------------+
+|   0   | joint_pos |          12 |
++-------+-----------+-------------+
+
+[INFO] Observation Manager: <ObservationManager> contains 1 groups.
++------------------------------------------------------------+
+| Active Observation Terms in Group: 'policy' (shape: (45,)) |
++-----------+----------------------------------+-------------+
+|   Index   | Name                             |    Shape    |
++-----------+----------------------------------+-------------+
+|     0     | base_ang_vel                     |     (3,)    |
+|     1     | projected_gravity                |     (3,)    |
+|     2     | velocity_commands                |     (3,)    |
+|     3     | joint_pos_rel                    |    (12,)    |
+|     4     | joint_vel_rel                    |    (12,)    |
+|     5     | prev_action                      |    (12,)    |
++-----------+----------------------------------+-------------+
+
+[INFO] Termination Manager:  <TerminationManager> contains 3 active terms.
++------------------------------------+
+|      Active Termination Terms      |
++-------+-----------------+----------+
+| Index | Name            | Time Out |
++-------+-----------------+----------+
+|   0   | time_out        |   True   |
+|   1   | base_height     |  False   |
+|   2   | bad_orientation |  False   |
++-------+-----------------+----------+
+
+[INFO] Reward Manager:  <RewardManager> contains 10 active terms.
++-----------------------------------+
+|        Active Reward Terms        |
++-------+------------------+--------+
+| Index | Name             | Weight |
++-------+------------------+--------+
+|   0   | track_lin_vel_xy |    0.0 |
+|   1   | track_ang_vel_z  |    0.0 |
+|   2   | joint_deviation  |    2.0 |
+|   3   | flat_orientation |    2.0 |
+|   4   | joint_acc        |   0.02 |
+|   5   | action_rate      |   0.01 |
+|   6   | joint_torques    |    0.1 |
+|   7   | base_height      |    2.0 |
+|   8   | feet_air_time    |    0.0 |
+|   9   | forward_progress |    0.0 |
++-------+------------------+--------+
+
+[INFO] Curriculum Manager:  <CurriculumManager> contains 0 active terms.
++-------------------------+
+| Active Curriculum Terms |
++-------------+-----------+
+|    Index    | Name      |
++-------------+-----------+
++-------------+-----------+
+
+[INFO]: Completed setting up the environment...
+--------------------------------------------------------------------------------
+Resolved observation sets: 
+	 actor :  ['policy']
+	 critic :  ['policy']
+--------------------------------------------------------------------------------
+Actor Model: MLPModel(
+  (obs_normalizer): Identity()
+  (distribution): GaussianDistribution()
+  (mlp): MLP(
+    (0): Linear(in_features=45, out_features=128, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=128, out_features=128, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=128, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=12, bias=True)
+  )
+)
+Critic Model: MLPModel(
+  (obs_normalizer): Identity()
+  (mlp): MLP(
+    (0): Linear(in_features=45, out_features=128, bias=True)
+    (1): ELU(alpha=1.0)
+    (2): Linear(in_features=128, out_features=128, bias=True)
+    (3): ELU(alpha=1.0)
+    (4): Linear(in_features=128, out_features=128, bias=True)
+    (5): ELU(alpha=1.0)
+    (6): Linear(in_features=128, out_features=1, bias=True)
+  )
+)
+CUDA graph took: Last: 0.373729 s, Mean: 0.373729 s, Std: 0.000000 s, N: 1
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+step extras keys: ['log', 'time_outs']
+time_outs: tensor([False], device='cuda:0')
+
+Saved evaluation results to D:\Projects\Quadruped\results\eval\stand\eval_20261105_230827.json
+
+=== Summary ===
+  stage            : stand
+  episodes         : 5
+  survival rate    : 0.000
+  command success   : 0.000
+  velocity MAE (m/s): 0.641
+  gait match rate   : 0.000
+  CoT mean         : 0.000
+     0.00 m/s | surv=0.00 succ=0.00 mae=0.205 gait=0.00 cot=0.000
+     0.25 m/s | surv=0.00 succ=0.00 mae=0.518 gait=0.00 cot=0.000
+     0.50 m/s | surv=0.00 succ=0.00 mae=0.679 gait=0.00 cot=0.000
+     0.75 m/s | surv=0.00 succ=0.00 mae=0.820 gait=0.00 cot=0.000
+     1.00 m/s | surv=0.00 succ=0.00 mae=0.985 gait=0.00 cot=0.000

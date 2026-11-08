@@ -1,0 +1,52 @@
+{
+  "name": "obstacle_avoidance",
+  "description": "Forward locomotion into a frontal box obstacle, with the depth camera live: the robot must detect the obstacle in the rendered depth frame, deflect away from it, and keep a geometric clearance it never had to be told about.",
+  "vision": true,
+  "obstacles": [
+    {
+      "name": "frontal_box",
+      "type": "box",
+      "pos": [1.85, 0.0],
+      "size": [0.25, 0.35, 0.30],
+      "yaw": 0.0
+    }
+  ],
+  "duration_s": 7.0,
+  "commands": [
+    {
+      "start_time_s": 0.0,
+      "duration_s": 1.0,
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "start_time_s": 1.0,
+      "duration_s": 5.0,
+      "mode": "trot",
+      "vx": 0.35,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    },
+    {
+      "start_time_s": 6.0,
+      "duration_s": 1.0,
+      "mode": "stand",
+      "vx": 0.0,
+      "vy": 0.0,
+      "yaw_rate": 0.0
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.18,
+    "max_pitch_rad": 0.18,
+    "min_forward_displacement_m": 0.2,
+    "min_obstacle_clearance_m": 0.15,
+    "min_obstacle_engagement_m": 0.30,
+    "min_lateral_deviation_m": 0.10,
+    "min_obstacle_detections": 1
+  },
+  "notes": "The obstacle is a static box on the world floor at x=1.85 m, injected into the MuJoCo world at run time; the vendor MJCF is not modified. The gate is geometric, not observed: min_obstacle_clearance_m is the signed distance from the robot's collidable geoms to the obstacle (negative means interpenetration), min_obstacle_engagement_m is how much closer the robot got to the obstacle than it started (so a robot that never moves cannot pass by refusing to engage), min_lateral_deviation_m is the perpendicular distance from the base to the straight line from the start pose to the obstacle (so a robot that stops short without swerving cannot pass), and min_obstacle_detections requires the depth camera to have actually flagged the obstacle (so a blind robot cannot pass). A blind, stationary, or ploughing robot fails."
+}

@@ -1,0 +1,134 @@
+# Isaac Lab Go2 Stand Stage Config
+# Stage 0: Stand from rest - no velocity tracking
+
+isaac_lab:
+  experiment_name: "go2_stand"
+  run_name: "seed0"
+  log_interval: 10
+  save_interval: 50
+  tensorboard: true
+
+sim:
+  dt: 0.005
+  decimation: 4
+  physics_material:
+    static_friction: 1.0
+    dynamic_friction: 1.0
+  physics:
+    default: "newton_mjwarp"
+    newton_mjwarp:
+      solver_cfg:
+        njmax: 200
+        nconmax: 80
+  use_newton_actuators: true
+
+scene:
+  num_envs: 4096
+  env_spacing: 2.5
+  terrain_type: "plane"
+
+commands:
+  base_velocity:
+    resampling_time_range: [1000.0, 1000.0]  # Effectively no resampling
+    rel_standing_envs: 1.0  # All envs standing
+    ranges:
+      lin_vel_x: [0.0, 0.0]
+      lin_vel_y: [0.0, 0.0]
+      ang_vel_z: [0.0, 0.0]
+
+observations:
+  policy:
+    base_ang_vel: true
+    projected_gravity: true
+    velocity_command: true
+    joint_pos: true
+    joint_vel: true
+    prev_action: true
+
+actions:
+  joint_positions:
+    asset_name: "robot"
+    joint_names: [".*_hip_.*", ".*_thigh_.*", ".*_calf_.*"]
+    scale: 0.5
+    use_default_offset: true
+    clip: {".*": [-1.0, 1.0]}
+
+rewards:
+  track_lin_vel_xy:
+    weight: 0.0
+  track_ang_vel_z:
+    weight: 0.0
+  lin_vel_z:
+    weight: -2.0
+  ang_vel_xy:
+    weight: -0.05
+  base_height:
+    weight: -50.0
+    params:
+      target_height: 0.27
+  orientation:
+    weight: -10.0
+  torques:
+    weight: -1e-4
+  dof_acc:
+    weight: -1e-6
+  action_rate:
+    weight: -0.01
+  posture:
+    weight: -2.0
+
+terminations:
+  time_out: true
+  base_height:
+    params:
+      minimum_height: 0.20  # Higher minimum for stand
+  bad_orientation:
+    params:
+      limit_angle: 1.0
+
+curriculum:
+  command_resampling: false
+
+events: {}
+
+episode_length_s: 20.0
+
+ppo:
+  num_steps_per_env: 24
+  max_iterations: 300
+  save_interval: 50
+  experiment_name: "go2_stand"
+  obs_groups:
+    actor: ["policy"]
+    critic: ["policy"]
+  actor:
+    class_name: "MLPModel"
+    hidden_dims: [128, 128, 128]
+    activation: "elu"
+    obs_normalization: true
+    distribution_cfg:
+      init_std: 1.0
+      std_type: "log"
+      std_range: [0.01, 10.0]
+  critic:
+    class_name: "MLPModel"
+    hidden_dims: [128, 128, 128]
+    activation: "elu"
+    obs_normalization: true
+  algorithm:
+    value_loss_coef: 1.0
+    use_clipped_value_loss: true
+    clip_param: 0.2
+    entropy_coef: 0.0
+    num_learning_epochs: 5
+    num_mini_batches: 4
+    learning_rate: 1.0e-3
+    schedule: "adaptive"
+    gamma: 0.99
+    lam: 0.95
+    desired_kl: 0.01
+    max_grad_norm: 1.0
+  seed: 0
+  device: "cuda"
+
+device: "cuda"

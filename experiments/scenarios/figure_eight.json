@@ -1,0 +1,25 @@
+{
+  "name": "figure_eight",
+  "description": "Continuous Figure-8 (Gerono lemniscate) trajectory tracking at ~0.30 m/s, scale 1.2 x 0.6, starting at the robot's initial position.",
+  "duration_s": 20.0,
+  "mode": "trajectory",
+  "trajectory": {
+    "path_type": "figure_8",
+    "params": {
+      "cx": 0.0,
+      "cy": 0.0,
+      "scale_x": 1.2,
+      "scale_y": 0.6,
+      "omega": 0.3304
+    },
+    "duration": 20.0
+  },
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.20,
+    "max_pitch_rad": 0.20,
+    "min_path_length_m": 3.0,
+    "max_tracking_error_m": 0.4
+  },
+  "notes": "params are the geometry the tracker actually reads (scale_x, scale_y, omega) for x = cx + scale_x*sin(t), y = cy + scale_y*sin(t)*cos(t), t = omega * elapsed. | min_path_length_m derivation: the lemniscate is traversed at a declared 0.30 m/s average, which fixes omega = 2*pi*0.30 / L_period(scale_x=1.2, scale_y=0.6) = 2*pi*0.30/5.7046 = 0.3304 rad/s, so arc length = speed x duration = 0.30 m/s x 20.0 s = 6.0 m (1.05 periods). A base that follows the path accumulates that much cumulative travel while a stationary base accumulates ~0 m. The gate requires 50% of the ideal arc (3.0 m). Net displacement is deliberately NOT used here: a correct closed figure returns to its start, so net displacement is ~0 for both a correct figure-eight and a stationary robot. | max_tracking_error_m derivation: the evaluator generates the reference analytically from the same closed form, and the threshold is one third of scale_x (1.2/3 = 0.4 m). Discrimination is geometric, not observed: the reference stays within scale_x = 1.2 m of the origin, so a base parked at its start pose reaches 1.2 m of error at the far lobes, and a base that drives off along the initial tangent (normalised (0.894, 0.447), ~8.9 m over a full run) ends >7 m away, so neither can pass; a tracker holding the path stays well inside 0.4 m. The centre is (0, 0), which is also where the parametric path starts (sin(t)=0 at t=0), so the reference begins at the robot's own start pose and the max error is not dominated by an approach transient. The peak instantaneous path speed is ~0.37 m/s against the tracker's 0.35 m/s cap, so brief clipping is expected and bounded rather than an arbitrarily scaled-down path."
+}

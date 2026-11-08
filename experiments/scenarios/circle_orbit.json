@@ -1,0 +1,24 @@
+{
+  "name": "circle_orbit",
+  "description": "Continuous circular trajectory tracking with radius 1.5m and speed 0.35 m/s. The circle is anchored on the start pose so the reference passes through the robot's initial position.",
+  "duration_s": 15.0,
+  "mode": "trajectory",
+  "trajectory": {
+    "path_type": "circle",
+    "params": {
+      "cx": -1.5,
+      "cy": 0.0,
+      "radius": 1.5,
+      "speed": 0.35
+    },
+    "duration": 15.0
+  },
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.20,
+    "max_pitch_rad": 0.20,
+    "min_path_length_m": 2.6,
+    "max_tracking_error_m": 0.5
+  },
+  "notes": "min_path_length_m derivation: the reference circle has arc length = speed x duration = 0.35 m/s x 15.0 s = 5.25 m, so a base that actually follows the path accumulates at least that much cumulative travel while a stationary base accumulates ~0 m no matter what it was commanded. The gate requires 50% of the ideal arc (2.625 m, rounded down to 2.6 m) to absorb the start-up transient. Net displacement is deliberately NOT used here: a correct lap returns to its start, so forward/lateral displacement is ~0 for both a correct circle and a stationary robot. | max_tracking_error_m derivation: the evaluator generates the reference analytically as (cx + r*cos(w*t), cy + r*sin(w*t)) with w = speed/radius = 0.2333 rad/s, and the threshold is one third of the radius (1.5/3 = 0.5 m). Discrimination is geometric, not observed: a base parked at the origin is 0 m from the reference at t=0 but reaches 2r = 3.0 m at the far side of the lap, and a base that ignores the curve and drives off along the initial tangent reaches ~6.5 m, so neither can pass; a tracker holding the path stays well inside 0.5 m. The centre is set to cx = -radius so the reference starts exactly at (0, 0), the robot's own start pose: with cx = cy = 0 the base would begin 1.5 m inside the circle and the max error would be ~1.5 m for a stationary base and a perfect tracker alike, making the metric unable to separate them."
+}

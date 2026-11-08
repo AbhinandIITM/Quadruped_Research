@@ -1,0 +1,62 @@
+{
+  "name": "plan_waypoint_square",
+  "description": "Plan arm of the decomposition-cost pair: the same closed four-corner route as the waypoint_square scenario -- (1.0, 0.0), then (1.0, 1.0), then (0.0, 1.0), then (0.0, 0.0) -- decomposed into four separate plan skills and a trailing hold, instead of one continuous waypoint list. Same markers, same tolerances, same speeds, same duration and the same path-length gate as waypoint_square, so the difference in cost of transport between the two scenarios is the cost of the decomposition itself.",
+  "duration_s": 25.0,
+  "mode": "plan",
+  "plan": [
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 1.0,
+        "y": 0.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 7.0
+      }
+    },
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 1.0,
+        "y": 1.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 7.0
+      }
+    },
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 0.0,
+        "y": 1.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 7.0
+      }
+    },
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 0.0,
+        "y": 0.0,
+        "tolerance": 0.15,
+        "speed": 0.25,
+        "duration": 6.0
+      }
+    },
+    {
+      "skill": "stand",
+      "args": {
+        "duration": 1.0
+      }
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.18,
+    "max_pitch_rad": 0.18,
+    "min_path_length_m": 2.0,
+    "min_plan_waypoints_reached": 4
+  },
+  "notes": "This is the PLAN arm of a matched pair with the waypoint_square scenario, and it is a control, not a new capability. Both runs visit the same four markers at the same tolerances and speeds, over the same 25.0 s, and are gated on the same 2.0 m path length, so neither arm is advantaged by a laxer threshold or extra wall-clock. The difference is the decomposition: the plan arm stops and re-arms the waypoint navigator at each corner, while the direct arm runs one continuous waypoint list. The plan arm additionally carries min_plan_waypoints_reached = 4, which is a strictly STRONGER gate than the direct arm's (the direct arm has no equivalent plan metric), so the comparison is conservative: the plan arm is measured under a harder threshold, not an easier one. MEASURED RESULT: the decomposition is energetically free. This arm returns net CoT 0.6400 (gross 1.5692, recovery 59.2%, path 4.183 m) against the direct arm's net CoT 0.6421 (gross 1.5719, recovery 59.2%, path 4.178 m) -- a 0.3% difference, well inside the run-to-run spread of the harness, and the plan arm is nominally the cheaper of the two. The reason is visible in the plan timeline: each skill ends on ARRIVAL rather than on its window closing (3.52, 5.11, 5.40, 5.91 s against windows of 7, 7, 7, 6 s), so the robot does not idle at a subgoal waiting for the next skill to start. The cost of the plan/execute layer is therefore NOT in the energetics; it is in the LLM round trip, which experiments/llm_planning_eval.py measures separately. min_path_length_m derivation is inherited verbatim from waypoint_square: the route is a closed unit square starting at the origin, giving four 1.0 m legs = 4.0 m of cumulative travel for a base that actually visits every waypoint, while a stationary base accumulates ~0 m, and the 50% threshold absorbs the start-up transient and the corner turns. Net displacement is deliberately NOT used: the route is closed, so a correct run ends with ~0 net displacement, exactly like a stationary robot. The per-skill durations (7.0, 7.0, 7.0, 6.0 s) are each long enough for the corresponding leg plus the deceleration into that corner's tolerance, and the trailing 1.0 s hold is the contract's own trailing-stand invariant."
+}

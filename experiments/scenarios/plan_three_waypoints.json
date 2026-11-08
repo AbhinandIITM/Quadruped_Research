@@ -1,0 +1,54 @@
+{
+  "name": "plan_three_waypoints",
+  "description": "Three-skill plan: visit three markers in sequence -- (1.0, 0.0), then (1.0, 1.0), then (0.0, 1.0) -- and hold. Each skill starts only after the previous goal has been reached, so the plan is a chain of subgoals rather than a single long velocity command.",
+  "duration_s": 20.0,
+  "mode": "plan",
+  "plan": [
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 1.0,
+        "y": 0.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 8.0
+      }
+    },
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 1.0,
+        "y": 1.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 8.0
+      }
+    },
+    {
+      "skill": "goto_waypoint",
+      "args": {
+        "x": 0.0,
+        "y": 1.0,
+        "tolerance": 0.15,
+        "speed": 0.30,
+        "duration": 8.0
+      }
+    },
+    {
+      "skill": "stand",
+      "args": {
+        "duration": 1.0
+      }
+    }
+  ],
+  "expected_metrics": {
+    "min_base_height_m": 0.24,
+    "max_roll_rad": 0.20,
+    "max_pitch_rad": 0.20,
+    "min_path_length_m": 2.0,
+    "min_plan_skills_completed": 4,
+    "min_plan_waypoints_reached": 3,
+    "max_final_goal_distance_m": 0.25
+  },
+  "notes": "min_path_length_m derivation: the three goals are the first three corners of a unit square, so a base that visits all three accumulates 1.0 + 1.0 + 1.0 = 3.0 m of travel; the gate requires 2.0 m, which is the same 50% margin the waypoint_square scenario uses for the same reason (start-up transient and the deceleration into each tolerance). The route is NOT closed -- unlike waypoint_square, which returns to the origin -- so net displacement is meaningful here, but it is deliberately not used as the gate, because a robot that reached the third goal by a different route would still have satisfied the plan. min_plan_skills_completed = 4 counts the three navigation skills and the trailing stationary hold. min_plan_waypoints_reached = 3 requires arrival at all three markers. max_final_goal_distance_m = 0.25 m is measured at the moment of arrival at the third goal, whose own tolerance is 0.15 m."
+}

@@ -1,0 +1,5 @@
+[11:11:11] seed=-1 stage=driver: seeds=[0, 1, 2, 3, 4] stages=['stand', 'balance', 'transition', 'walk'] steps=5,000,000
+[11:11:11] seed=0 stage=stand: starting
+[11:11:11] seed=0 stage=stand: log -> /run/media/abhi/Abhi/Projects/Quadruped/scripts/logs/seed_0/stand/worker.log
+[11:19:08] seed=0 stage=stand: exit=-15
+[11:19:08] seed=0 stage=stand: FAILED rc=-15; aborting seed 0

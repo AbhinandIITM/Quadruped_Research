@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "go2-champ"
+version = "0.2.0"
+description = "Hierarchical CHAMP locomotion and natural language intelligence stack for Unitree Go2 in MuJoCo"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "Quadruped Research Team" }
+]
+keywords = [
+    "robotics",
+    "quadruped",
+    "locomotion",
+    "champ",
+    "mujoco",
+    "unitree-go2",
+    "reinforcement-learning",
+    "vla",
+    "llm",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "mujoco>=3.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "scipy>=1.10.0",
+    "pillow>=9.5.0",
+]
+
+[project.optional-dependencies]
+smolvla = [
+    "torch>=2.0.0",
+    "transformers>=4.40.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.0",
+    "mypy>=1.5.0",
+]
+
+[project.scripts]
+go2-cli = "go2_champ_llm_cli:main"
+go2-server = "start_model_server:main"
+go2-benchmark = "evaluate_champ_trajectories:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+py-modules = [
+    "start_model_server",
+    "go2_champ_llm_cli",
+    "go2_champ_control",
+    "go2_llm_commands",
+    "go2_vlm_perception",
+    "go2_smolvla",
+    "go2_vision_perception",
+    "go2_multi_gait",
+    "go2_balance_qp",
+    "evaluate_champ_trajectories",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["go2_champ*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "B", "A", "C4"]
+ignore = ["E501", "B008", "N806", "N803", "N802"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = [".", "src", "utils", "experiments"]

@@ -1,0 +1,210 @@
+# Isaac Lab Go2 Training Configurations
+# Migrated from rl/configs/walk_fixed.yaml, walk.yaml, smoke.yaml
+
+isaac_lab:
+  # Experiment tracking
+  experiment_name: "go2_migration"
+  run_name: "seed0"
+
+  # Logging
+  log_interval: 10
+  save_interval: 50
+  tensorboard: true
+
+  # Checkpoint
+  checkpoint_dir: "logs/isaac_lab/checkpoints"
+  resume: null
+
+# Simulation
+sim:
+  dt: 0.005  # 200 Hz physics
+  decimation: 4  # 50 Hz control
+  physics_material:
+    static_friction: 1.0
+    dynamic_friction: 1.0
+    friction_combine_mode: "multiply"
+    restitution_combine_mode: "multiply"
+
+  # Newton physics backend
+  physics:
+    default: "newton_mjwarp"
+    newton_mjwarp:
+      solver_cfg:
+        njmax: 200
+        nconmax: 80
+
+  use_newton_actuators: true
+
+# Scene
+scene:
+  num_envs: 4096
+  env_spacing: 2.5
+  robot:
+    prim_path: "{ENV_REGEX_NS}/Robot"
+  ground:
+    prim_path: "/World/ground"
+    terrain_type: "plane"
+
+# Commands
+commands:
+  base_velocity:
+    resampling_time_range: [8.0, 12.0]
+    rel_standing_envs: 0.02
+    rel_heading_envs: 0.0
+    heading_command: false
+    ranges:
+      lin_vel_x: [-1.0, 1.0]
+      lin_vel_y: [-0.5, 0.5]
+      ang_vel_z: [-1.0, 1.0]
+
+# Observations
+observations:
+  policy:
+    # 45-dim: ang_vel(3) + projected_gravity(3) + command(3) + joint_pos(12) + joint_vel(12) + prev_action(12)
+    base_ang_vel: true
+    projected_gravity: true
+    velocity_command: true
+    joint_pos: true
+    joint_vel: true
+    prev_action: true
+
+# Actions
+actions:
+  joint_positions:
+    asset_name: "robot"
+    joint_names: [".*_hip_.*", ".*_thigh_.*", ".*_calf_.*"]
+    scale: 0.5
+    use_default_offset: true
+    clip: {".*": [-1.0, 1.0]}
+
+# Rewards
+rewards:
+  track_lin_vel_xy:
+    weight: 1.0
+    params:
+      command_name: "base_velocity"
+      std: 0.5
+  track_ang_vel_z:
+    weight: 0.5
+    params:
+      command_name: "base_velocity"
+      std: 0.5
+  lin_vel_z:
+    weight: -2.0
+  ang_vel_xy:
+    weight: -0.05
+  base_height:
+    weight: -10.0
+    params:
+      target_height: 0.27
+  orientation:
+    weight: -2.5
+  torques:
+    weight: -2.5e-5
+  dof_acc:
+    weight: -2.5e-7
+  action_rate:
+    weight: -0.01
+  posture:
+    weight: -0.5
+  feet_air_time:
+    weight: 0.5
+    params:
+      command_name: "base_velocity"
+      sensor_cfg: "contact_forces"
+      threshold: 0.5
+  forward_progress:
+    weight: 0.5
+    params:
+      command_name: "base_velocity"
+
+# Terminations
+terminations:
+  time_out: true
+  base_height:
+    params:
+      minimum_height: 0.16
+  bad_orientation:
+    params:
+      limit_angle: 1.0
+
+# Curriculum
+curriculum:
+  command_resampling: true
+
+# Events (domain randomization)
+events:
+  randomize_friction:
+    func: "randomize_friction"
+    mode: "reset"
+    params:
+      asset_cfg: "robot"
+      body_names: ".*_calf"
+      friction_distribution_params: [0.6, 1.4]
+      operation: "scale"
+  randomize_rigid_body_mass:
+    func: "randomize_rigid_body_mass"
+    mode: "startup"
+    params:
+      asset_cfg: "robot"
+      mass_distribution_params: [-0.1, 0.1]
+      operation: "add"
+  randomize_joint_friction:
+    func: "randomize_joint_friction"
+    mode: "startup"
+    params:
+      asset_cfg: "robot"
+      friction_distribution_params: [0.9, 1.1]
+      operation: "scale"
+  randomize_motor_strength:
+    func: "randomize_motor_strength"
+    mode: "startup"
+    params:
+      asset_cfg: "robot"
+      strength_distribution_params: [0.9, 1.1]
+      operation: "scale"
+
+# Episode
+episode_length_s: 20.0
+
+# RSL-RL PPO Configuration
+ppo:
+  num_steps_per_env: 24
+  max_iterations: 300
+  save_interval: 50
+  experiment_name: "go2_flat"
+  obs_groups:
+    actor: ["policy"]
+    critic: ["policy"]
+  actor:
+    class_name: "MLPModel"
+    hidden_dims: [128, 128, 128]
+    activation: "elu"
+    obs_normalization: true
+    distribution_cfg:
+      init_std: 1.0
+      std_type: "log"
+      learn_std: true
+  critic:
+    class_name: "MLPModel"
+    hidden_dims: [128, 128, 128]
+    activation: "elu"
+    obs_normalization: true
+  algorithm:
+    value_loss_coef: 1.0
+    use_clipped_value_loss: true
+    clip_param: 0.2
+    entropy_coef: 0.0  # CRITICAL: entropy_coef=0.0 to avoid entropy explosion
+    num_learning_epochs: 5
+    num_mini_batches: 4
+    learning_rate: 1.0e-3
+    schedule: "adaptive"
+    gamma: 0.99
+    lam: 0.95
+    desired_kl: 0.01
+    max_grad_norm: 1.0
+  seed: 0
+  device: "cuda"
+
+# Device
+device: "cuda"
